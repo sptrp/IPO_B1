@@ -108,6 +108,7 @@
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
+              <xs:element maxOccurs="unbounded" name="buchung" type="xs:unsignedInt" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
