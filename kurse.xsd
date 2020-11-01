@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="veranstaltungen">
     <xs:complexType>
@@ -10,8 +9,8 @@
               <xs:element name="guid">
                 <xs:simpleType>
                   <xs:restriction base="xs:unsignedInt">
-                    <xs:minInclusive value="100000"/>
-                    <xs:maxInclusive value="999999"/>
+                    <xs:minInclusive value="100000" />
+                    <xs:maxInclusive value="999999" />
                   </xs:restriction>
                 </xs:simpleType>  
               </xs:element>  
@@ -99,7 +98,13 @@
                   <xs:sequence>
                     <xs:element name="typ" type="xs:string" />
                     <xs:element name="name" type="xs:string" />
-                    <xs:element name="uri" type="xs:string" />
+                    <xs:element name="uri">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                          <xs:pattern value="http://www.[a-zA-Z \d\p{P}\p{S}]+"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
