@@ -21,7 +21,7 @@ async def demo():
 
         # send() sends a message to the client
         # await enforces to wait for a response
-        await ws.send("Gimme courses")
+        await ws.send("csv")
 
         # recv() receives data from the server
         response = await ws.recv()
