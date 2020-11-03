@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-
 """
 Example uses a WebSockets server for testing purposes (see also https://www.websocket.org/echo.html).
-The server simply replies with the same message.
+The server simply replies with xml or csv.
 """
 
 # TODO: 
@@ -19,8 +17,7 @@ async def demo():
     # "async with" closes connection at context switch automatically (https://www.python.org/dev/peps/pep-0492/#asynchronous-context-managers-and-async-with)
     async with websockets.connect("ws://localhost:8765") as ws:
 
-        # send() sends a message to the client
-        # await enforces to wait for a response
+        # send "csv" to get csv response, or smth else to xml response
         await ws.send("csv")
 
         # recv() receives data from the server

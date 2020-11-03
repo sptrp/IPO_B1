@@ -8,8 +8,13 @@
 
 import asyncio
 import websockets
+import logging
 import xml.etree.ElementTree as et
 import pandas as pd  
+import csv
+
+# logging
+logging.basicConfig(level=logging.DEBUG)
 
 xml = "/Users/Sptrp/Desktop/IPO_B1/kurse_snippet.xml"
 
@@ -24,8 +29,9 @@ def csv_parser():
 
   cols = ['Guid', 'Nummer', 'Name', 'Untertitel']
   rows = []
+  spamreader = ''
 
-  with open('mycsvfile.csv','w', newline='') as file:
+  with open('mycsvfile.csv', 'w', newline='') as file:
     # parse einzelne Elemente
     for elem in root:
       guid = elem.find('guid').text
@@ -38,7 +44,11 @@ def csv_parser():
       df = pd.DataFrame(rows, columns = cols) 
       df.to_csv('mycsvfile.csv')
 
-  return "test"
+  with open('mycsvfile.csv') as f:
+    string = f.read() + '\n'
+
+  return string 
+  
 
 
 async def echo(websocket, path):
