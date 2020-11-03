@@ -11,14 +11,14 @@ import websockets
 import xml.etree.ElementTree as et
 import pandas as pd  
 
+xml = "/Users/Sptrp/Desktop/IPO_B1/kurse_snippet.xml"
+
 def xml_parser():
-  xml = "/Users/Sptrp/Desktop/IPO_B1/kurse_snippet.xml"
   tree = et.parse(xml)
   root = tree.getroot()
   return root
 
 def csv_parser():
-  xml = "/Users/Sptrp/Desktop/IPO_B1/kurse_snippet.xml"
   tree = et.parse(xml)
   root = tree.getroot()
 
@@ -26,7 +26,7 @@ def csv_parser():
   rows = []
 
   with open('mycsvfile.csv','w', newline='') as file:
-    #parse einzelne Elemente
+    # parse einzelne Elemente
     for elem in root:
       guid = elem.find('guid').text
       nummer = elem.find('nummer').text
@@ -44,7 +44,7 @@ def csv_parser():
 async def echo(websocket, path):
     async for message in websocket:
 
-        # Print client message at server console
+        # Formatanfrage bearbeiten
         if (message == "csv"):
           await websocket.send(csv_parser())
         else: 
