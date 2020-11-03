@@ -1,15 +1,18 @@
-#!/usr/bin/env python3
-
 """ Simple websocket server
 """
 
 # TODO: 
 # pip install asyncio
 # pip install websockets
+# pip install xmltodict
+# pip install pandas
 
 import asyncio
 import websockets
-import xml.etree.ElementTree as et
+import lxml.etree as et
+import csv
+import xmltodict
+import pandas as pd  
 
 def xml_parser():
   xml = "/Users/Sptrp/Desktop/IPO_B1/kurse_snippet.xml"
@@ -17,20 +20,46 @@ def xml_parser():
   root = tree.getroot()
   return root
 
+def csv_parser():
+  xml = "/Users/Sptrp/Desktop/IPO_B1/kurse_snippet.xml"
+  tree = et.parse(xml)
+  root = tree.getroot()
+
+  # convert to dict
+  #xmlstr = et.tostring(root, encoding='utf-8', method='xml')
+  #xml_dict = dict(xmltodict.parse(xmlstr))
+
+  cols = ['Guid', 'Nummer', 'Name', 'Untertitel']
+  rows = []
+
+  with open('mycsvfile.csv','w', newline='') as file:
+
+    #parse einzelne Elemente
+    for elem in root:
+      guid = elem.find('guid').text
+      nummer = elem.find('nummer').text
+      name = elem.find('name').text
+      untertitel = elem.find('untertitel').text
+
+      rows.append({"Guid": guid, "Nummer": nummer, "Name": name, "Untertitel": untertitel})
+
+      df = pd.DataFrame(rows, columns = cols) 
+      df.to_csv('mycsvfile.csv')
+
+  return "test"
+
+
 async def echo(websocket, path):
     async for message in websocket:
 
         # Print client message at server console
-        print(f"The client wants courses")
-
-        xmlstr = et.tostring(xml_parser(), encoding='utf8', method='xml')
+        print(f"The client says: {message}")
+        #xmlstr = et.tostring(csv_parser(), encoding='utf8', method='xml')
 
         # ... and sent it back to client
-        await websocket.send(xmlstr)
+        await websocket.send(csv_parser())
 
-# get_event_loop: low-level function to create an event loop instance
-# run_until_complete: runs until the future (see argument) has completed
-# websockets.serve: creates, starts, and returns a WebSocket server; 'echo' is a WebSocket handler
+
 asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765) )
 
 print(f"Running service at https//:localhost:8765")
