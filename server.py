@@ -5,6 +5,7 @@
 # pip install asyncio
 # pip install websockets
 # pip install pandas
+# pip install lxml
 
 import asyncio
 import websockets
@@ -12,11 +13,13 @@ import logging
 import xml.etree.ElementTree as et
 import pandas as pd  
 import csv
+from lxml import etree
 
-# logging
+# logger
 logging.basicConfig(level=logging.DEBUG)
 
 xml = "/Users/Sptrp/Desktop/IPO_B1/kurse_snippet.xml"
+schema = "/Users/Sptrp/Desktop/IPO_B1/kurse.xsd"
 
 def xml_parser():
   tree = et.parse(xml)
@@ -32,7 +35,7 @@ def csv_parser():
   spamreader = ''
 
   with open('mycsvfile.csv', 'w', newline='') as file:
-    # parse einzelne Elemente
+    # parse elements
     for elem in root:
       guid = elem.find('guid').text
       nummer = elem.find('nummer').text
@@ -41,24 +44,41 @@ def csv_parser():
 
       rows.append({"Guid": guid, "Nummer": nummer, "Name": name, "Untertitel": untertitel})
 
-      df = pd.DataFrame(rows, columns = cols) 
-      df.to_csv('mycsvfile.csv')
+      dataframe = pd.DataFrame(rows, columns = cols) 
+      dataframe.to_csv('mycsvfile.csv')
 
   with open('mycsvfile.csv') as f:
-    string = f.read() + '\n'
+    output_string = f.read() + '\n'
 
-  return string 
+  return output_string 
+
+
+# validator for incoming xml  
+def xml_validator():
   
+  # create parser from xsd schema
+  with open(schema, 'rb') as f:
+    schema_root = etree.XML(f.read())
+    val_schema = etree.XMLSchema(schema_root)
+    parser = etree.XMLParser(schema=val_schema)
+
+  try:
+    with open(xml, 'r') as f:
+      etree.fromstring(f.read(), parser) 
+    return True # return true if file is valid
+  except etree.XMLSchemaError: 
+    return False # return false and exception if not
+
 
 
 async def echo(websocket, path):
     async for message in websocket:
 
-        # Formatanfrage bearbeiten
+        # handle format query
         if (message == "csv"):
           await websocket.send(csv_parser())
         else: 
-          await websocket.send(xml_parser())
+          await websocket.send(xml_validator())
 
 
 asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765) )

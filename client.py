@@ -18,7 +18,7 @@ async def demo():
     async with websockets.connect("ws://localhost:8765") as ws:
 
         # send "csv" to get csv response, or smth else to xml response
-        await ws.send("csv")
+        await ws.send("asd")
 
         # recv() receives data from the server
         response = await ws.recv()
