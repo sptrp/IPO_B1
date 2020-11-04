@@ -111,7 +111,7 @@
               <xs:element name="buchung">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element maxOccurs="unbounded" name="kunde" type="xs:unsignedInt" />
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="kunde" type="xs:unsignedInt" />
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>      

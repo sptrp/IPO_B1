@@ -45,6 +45,9 @@
             <name>zur Kursbuchung</name>
             <uri>http://www.vhsit.berlin.de/VHSKURSE/BusinessPages/CourseDetail.aspx?id=569306</uri>
         </webadresse>
+        <buchung>
+            
+        </buchung>   
     </veranstaltung>
     <veranstaltung>
         <guid>578841</guid>
@@ -98,6 +101,9 @@ Vorkenntnisse: A1.1</text>
             <name>zur Kursbuchung</name>
             <uri>http://www.vhsit.berlin.de/VHSKURSE/BusinessPages/CourseDetail.aspx?id=578841</uri>
         </webadresse>
+        <buchung>
+            
+        </buchung>   
     </veranstaltung>
     <veranstaltung>
         <guid>569060</guid>
@@ -147,5 +153,8 @@ Da alle Übungen auf dem eigenen Smartphone gemacht werden, bringen Sie am beste
             <name>zur Kursbuchung</name>
             <uri>http://www.vhsit.berlin.de/VHSKURSE/BusinessPages/CourseDetail.aspx?id=569060</uri>
         </webadresse>
+        <buchung>
+            
+        </buchung>    
     </veranstaltung>
 </veranstaltungen>
