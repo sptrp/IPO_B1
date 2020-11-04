@@ -10,10 +10,10 @@
 import asyncio
 import websockets
 import logging
-import xml.etree.ElementTree as et
+#import xml.etree.ElementTree as et
 import pandas as pd  
 import csv
-from lxml import etree
+import lxml.etree as et
 
 # logger
 logging.basicConfig(level=logging.DEBUG)
@@ -26,6 +26,7 @@ def xml_parser():
   root = tree.getroot()
   return root
 
+# parse kurse_snippet and return csv
 def csv_parser():
   tree = et.parse(xml)
   root = tree.getroot()
@@ -55,7 +56,6 @@ def csv_parser():
 
 # validator for incoming xml  
 def xml_validator():
-  
   # create parser from xsd schema
   with open(schema, 'rb') as f:
     schema_root = etree.XML(f.read())
@@ -69,20 +69,27 @@ def xml_validator():
   except etree.XMLSchemaError: 
     return False # return false and exception if not
 
+# select concrete element
+def xml_selector(path):
+
+  root = xml_parser()
+  list = root.xpath(path)
+
+  return list
+
 
 
 async def echo(websocket, path):
     async for message in websocket:
-
         # handle format query
         if (message == "csv"):
           await websocket.send(csv_parser())
-        else: 
-          await websocket.send(xml_validator())
+        else:
+          print(message) 
+          await websocket.send(str(xml_selector(message)))
 
 
 asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765) )
-
 print(f"Running service at https//:localhost:8765")
 # run_forever: runs the event loop forever; end loop with stop() method or Ctrl-C
 asyncio.get_event_loop().run_forever()
