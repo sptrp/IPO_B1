@@ -18,8 +18,8 @@ import sys
 # logger
 logging.basicConfig(level=logging.DEBUG)
 
-xml = "/Users/Sptrp/Desktop/IPO_B1/kurse_snippet.xml"
-schema = "/Users/Sptrp/Desktop/IPO_B1/kurse.xsd"
+xml = "kurse_snippet.xml"
+schema = "kurse.xsd"
 
 def xml_parser():
   tree = et.parse(xml)
