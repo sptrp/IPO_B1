@@ -10,10 +10,10 @@
 import asyncio
 import websockets
 import logging
-#import xml.etree.ElementTree as et
 import pandas as pd  
 import csv
 import lxml.etree as et
+import sys
 
 # logger
 logging.basicConfig(level=logging.DEBUG)
@@ -36,17 +36,14 @@ def csv_parser():
   spamreader = ''
 
   with open('mycsvfile.csv', 'w', newline='') as file:
-    # parse elements
+    # parse elements and write to csv
     for elem in root:
-      guid = elem.find('guid').text
-      nummer = elem.find('nummer').text
-      name = elem.find('name').text
-      untertitel = elem.find('untertitel').text
 
-      rows.append({"Guid": guid, "Nummer": nummer, "Name": name, "Untertitel": untertitel})
-
-      dataframe = pd.DataFrame(rows, columns = cols) 
-      dataframe.to_csv('mycsvfile.csv')
+      rows.append({ "Guid": elem.find('guid').text, "Nummer": elem.find('nummer').text, 
+                    "Name": elem.find('name').text, "Untertitel": elem.find('untertitel').text 
+                  })
+    dataframe = pd.DataFrame(rows, columns = cols) 
+    dataframe.to_csv('mycsvfile.csv')
 
   with open('mycsvfile.csv') as f:
     output_string = f.read() + '\n'
@@ -70,15 +67,46 @@ def xml_validator():
     return False # return false and exception if not
 
 # select concrete element
-def xml_selector(path):
+def xml_element_selector(path):
 
   root = xml_parser()
   list = root.xpath(path)
 
   return list
 
+def show_my_bookings(path):
+  root = xml_parser()
+  my_dict = {}
+  csv_file = "courses.csv"
+  cols = ['Name', 'Untertitel', 'Minimale Teilnehmerzahl', 'Maximale Teilnehmerzahl', 'Beginn Datum']
+  rows = []
+
+  # parse all found elements and make dict
+  for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
+    for dept in targ.xpath('ancestor-or-self::veranstaltung'):
+      my_dict[dept[0].text] = { "Name" : dept[2].text, "Untertitel" : dept[3].text,
+                                "Minimale Teilnehmerzahl" : dept[5].text,
+                                "Maximale Teilnehmerzahl" : dept[6].text,
+                                "Beginn Datum" : dept[8].text
+                              } 
+  try:
+    with open('courses.csv', 'w', newline='') as file:
+      for elem in my_dict:
+        # parse elements and write to csv
+        rows.append({ "Name": my_dict[elem]['Name'], "Untertitel": my_dict[elem]['Untertitel'],
+                      "Minimale Teilnehmerzahl": my_dict[elem]['Minimale Teilnehmerzahl'], 
+                      "Maximale Teilnehmerzahl": my_dict[elem]['Maximale Teilnehmerzahl'], 
+                      "Beginn Datum": my_dict[elem]['Beginn Datum'] 
+                    })
+      dataframe = pd.DataFrame(rows, columns = cols) 
+      dataframe.to_csv('courses.csv')
+  except IOError:
+      print("I/O error")
+
+  return "my_dict"
 
 
+# server
 async def echo(websocket, path):
     async for message in websocket:
         # handle format query
@@ -86,7 +114,7 @@ async def echo(websocket, path):
           await websocket.send(csv_parser())
         else:
           print(message) 
-          await websocket.send(str(xml_selector(message)))
+          await websocket.send(str(show_my_bookings(message)))
 
 
 asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765) )

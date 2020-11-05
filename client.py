@@ -11,7 +11,9 @@ import asyncio
 import websockets
 
 def path_constructor(elem, val):
-  return "//veranstaltung[{}={}]" .format(elem, val)
+  return "//veranstaltung/buchung[{}={}]" .format(elem, val)
+
+
 
 # async = asynchronous function (coroutine; https://docs.python.org/3/glossary.html#term-coroutine)
 async def demo():
@@ -21,11 +23,11 @@ async def demo():
     async with websockets.connect("ws://localhost:8765") as ws:
 
         # send "csv" to get csv response, or smth else to xml response
-        await ws.send(path_constructor("guid", "578841"))
+        await ws.send(path_constructor("kunde", "12345"))
 
         # recv() receives data from the server
         response = await ws.recv()
-        print("XML valid? : " + response)
+        print("My course : " + response)
 
 # async only runs in an event_loop (https://cheat.readthedocs.io/en/latest/python/asyncio.html#event-loops)
 # run_until_complete() gets demo coroutine as input to execute it
