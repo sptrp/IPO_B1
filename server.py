@@ -32,25 +32,30 @@ def csv_parser():
   tree = et.parse(xml)
   root = tree.getroot()
 
-  cols = ['Guid', 'Nummer', 'Name', 'Untertitel']
   rows = []
   spamreader = ''
+  cols = ['Guid', 'Nummer', 'Name', 'Untertitel']
+  # give the temp data distinct name
   file_name = 'courses.%s.csv' % os.getpid()
 
-  with open(file_name, 'w', newline='') as file:
-    # parse elements and write to csv
-    for elem in root:
+  try:
+    with open(file_name, 'w', newline='') as file:
+      # parse elements and write to csv
+      for elem in root:
 
-      rows.append({ "Guid": elem.find('guid').text, "Nummer": elem.find('nummer').text, 
-                    "Name": elem.find('name').text, "Untertitel": elem.find('untertitel').text 
-                  })
-    dataframe = pd.DataFrame(rows, columns = cols) 
-    dataframe.to_csv(file_name)
-
-  with open(file_name) as f:
-    output_string = f.read() + '\n'
-    # remove temp datei
-    os.remove(file_name)
+        rows.append({ "Guid": elem.find('guid').text, "Nummer": elem.find('nummer').text, 
+                      "Name": elem.find('name').text, "Untertitel": elem.find('untertitel').text 
+                    })
+      dataframe = pd.DataFrame(rows, columns = cols) 
+      dataframe.to_csv(file_name)
+  except IOError:
+    print("I/O error")
+  finally:
+    with open(file_name) as f:
+      # place csv data in output string
+      output_string = f.read() + '\n'
+      # remove temp datei
+      os.remove(file_name)
   
   return output_string 
 
@@ -81,9 +86,9 @@ def xml_element_selector(path):
 def show_my_bookings(path):
   root = xml_parser()
   my_dict = {}
-  csv_file = "courses.csv"
-  cols = ['Name', 'Untertitel', 'Minimale Teilnehmerzahl', 'Maximale Teilnehmerzahl', 'Beginn Datum']
   rows = []
+  cols = ['Name', 'Untertitel', 'Minimale Teilnehmerzahl', 'Maximale Teilnehmerzahl', 'Beginn Datum']
+  # give the temp data distinct name
   file_name = 'my_courses.%s.csv' % os.getpid()
 
   # parse all found elements and make dict
@@ -109,10 +114,10 @@ def show_my_bookings(path):
       print("I/O error")
   finally:
     with open(file_name) as f:
+      # place csv data in output string
+      output_string = f.read() + '\n'
       # remove temp file
       os.remove(file_name)
-      output_string = f.read() + '\n'
-
 
   return output_string
 
