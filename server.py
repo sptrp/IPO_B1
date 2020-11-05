@@ -45,7 +45,7 @@ def csv_parser():
                     "Name": elem.find('name').text, "Untertitel": elem.find('untertitel').text 
                   })
     dataframe = pd.DataFrame(rows, columns = cols) 
-    dataframe.to_csv('mycsvfile.csv')
+    dataframe.to_csv(file_name)
 
   with open(file_name) as f:
     output_string = f.read() + '\n'
