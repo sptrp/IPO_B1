@@ -14,6 +14,7 @@ import pandas as pd
 import csv
 import lxml.etree as et
 import sys
+import os
 
 # logger
 logging.basicConfig(level=logging.DEBUG)
@@ -34,8 +35,9 @@ def csv_parser():
   cols = ['Guid', 'Nummer', 'Name', 'Untertitel']
   rows = []
   spamreader = ''
+  file_name = 'courses.%s.csv' % os.getpid()
 
-  with open('mycsvfile.csv', 'w', newline='') as file:
+  with open(file_name, 'w', newline='') as file:
     # parse elements and write to csv
     for elem in root:
 
@@ -45,9 +47,11 @@ def csv_parser():
     dataframe = pd.DataFrame(rows, columns = cols) 
     dataframe.to_csv('mycsvfile.csv')
 
-  with open('mycsvfile.csv') as f:
+  with open(file_name) as f:
     output_string = f.read() + '\n'
-
+    # remove temp datei
+    os.remove(file_name)
+  
   return output_string 
 
 
@@ -80,6 +84,7 @@ def show_my_bookings(path):
   csv_file = "courses.csv"
   cols = ['Name', 'Untertitel', 'Minimale Teilnehmerzahl', 'Maximale Teilnehmerzahl', 'Beginn Datum']
   rows = []
+  file_name = 'my_courses.%s.csv' % os.getpid()
 
   # parse all found elements and make dict
   for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
@@ -90,7 +95,7 @@ def show_my_bookings(path):
                                 "Beginn Datum" : dept[8].text
                               } 
   try:
-    with open('courses.csv', 'w', newline='') as file:
+    with open(file_name, 'w') as file:
       for elem in my_dict:
         # parse elements and write to csv
         rows.append({ "Name": my_dict[elem]['Name'], "Untertitel": my_dict[elem]['Untertitel'],
@@ -99,11 +104,17 @@ def show_my_bookings(path):
                       "Beginn Datum": my_dict[elem]['Beginn Datum'] 
                     })
       dataframe = pd.DataFrame(rows, columns = cols) 
-      dataframe.to_csv('courses.csv')
+      dataframe.to_csv(file_name)
   except IOError:
       print("I/O error")
+  finally:
+    with open(file_name) as f:
+      # remove temp file
+      os.remove(file_name)
+      output_string = f.read() + '\n'
 
-  return "my_dict"
+
+  return output_string
 
 
 # server
