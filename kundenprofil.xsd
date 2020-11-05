@@ -42,7 +42,15 @@
               </xs:sequence>
             </xs:complexType>
           </xs:element>
-          <xs:element maxOccurs="unbounded" name="kurse" type="xs:unsignedInt" />
+          <xs:element name="nummer" type="xs:string" />
+          <xs:element name="mail">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:pattern value="([a-zA-Z \d][@][a-zA-Z])"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+          <xs:element  name="kurse" minOccurs="0" maxOccurs="unbounded" type="xs:unsignedInt" />
         </xs:sequence>
     </xs:complexType>
   </xs:element>
