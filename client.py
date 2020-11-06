@@ -13,7 +13,7 @@ import websockets
 def path_constructor(elem, val):
   return "//veranstaltung/buchung[{}={}]" .format(elem, val)
 
-
+#DOE OSTI EI ENTEST
 
 # async = asynchronous function (coroutine; https://docs.python.org/3/glossary.html#term-coroutine)
 async def demo():
