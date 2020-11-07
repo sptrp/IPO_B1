@@ -127,15 +127,19 @@ def show_my_bookings(path):
 async def echo(websocket, path):
   async for message in websocket:
 
-    if (message == "asdasd"):
+    calltype = message[0:3]
+    format = message[-3:]
+
+    if (calltype == 'acs'):
       await websocket.send(csv_parser())
       
-    else:
+    elif (calltype == 'abk'):
       print(message) 
+      print(format)
       await websocket.send(str(show_my_bookings(message)))
 
 
 asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765) )
-print(f"Running service at https//:localhost:8765")
+print("Running service at https//:localhost:8765")
 # run_forever: runs the event loop forever; end loop with stop() method or Ctrl-C
 asyncio.get_event_loop().run_forever()

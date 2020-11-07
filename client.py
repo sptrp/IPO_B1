@@ -52,21 +52,23 @@ async def demo():
             elif choice == "4":
                 print("Do Something 4")
 
+            # Show my booking
             elif choice == "3":
               # call after format
               while choice != 'j':
                 print(config['menu']['choose_format'].value)
                 time.sleep(2)
-                choice = input (config['menu']['format_chosen'].value) 
+                choice = input (config['menu']['format_chosen'].value)  
                 
               #read config file to get actual format value and make query
               config.read("config.cfg")
+              calltype = config['calltype']['show_my_books'].value
+              path = path_constructor(config['misc']['path_client'].value, client_id)              
               format = config['misc']['format'].value
-              path = path_constructor(config['misc']['path_client'].value, client_id)
 
-              #data = "{}{}" .format(calltype, path, format)
+              data = "{}{}{}" .format(calltype, path, format)
 
-              await ws.send("asdasd")
+              await ws.send(data)
               # recv() receives data from the server
               response = await ws.recv()
               print("\n%s\n" % config['misc']['my_courses'].value + response)
@@ -75,8 +77,26 @@ async def demo():
             elif choice == "2":
                 print("Do Something 2")
 
+            # Show all courses
             elif choice == "1":
-                print("Do Something 1")
+              # call after format
+              while choice != 'j':
+                print(config['menu']['choose_format'].value)
+                time.sleep(2)
+                choice = input (config['menu']['format_chosen'].value) 
+                
+              #read config file to get actual format value and make query
+              config.read("config.cfg")
+              calltype = config['calltype']['show_all_courses'].value            
+              format = config['misc']['format'].value
+
+              data = "{}{}" .format(calltype, format)
+
+              await ws.send(data)
+              # recv() receives data from the server
+              response = await ws.recv()
+              print("\n%s\n" % config['misc']['all_courses'].value + response)
+              time.sleep(2)
 
             elif choice == "9":
                 print(config['menu']['bye'].value)
