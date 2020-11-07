@@ -23,11 +23,6 @@ xml = os.path.join(sys.path[0], 'kurse.xml')    #Quelle: https://stackoverflow.c
 schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
 curr_format = ""
 
-def process_element(catalog, *args, **kwargs):
-    for child in catalog.getchildren():
-        print(child.text)
-
-
 def xml_parser():
   tree = et.parse(xml)
   root = tree.getroot()
@@ -45,7 +40,7 @@ def csv_parser():
   file_name = 'courses.%s.csv' % os.getpid()
 
   try:
-    with open(file_name, 'w', newline='') as file:
+    with open(file_name, 'w', newline='', encoding="utf8") as file:
       # parse elements and write to csv
       for elem in root:
 
@@ -57,7 +52,7 @@ def csv_parser():
   except IOError:
     print("I/O error")
   finally:
-    with open(file_name) as f:
+    with open(file_name, encoding="utf8") as f:
       # place csv data in output string
       output_string = f.read() + '\n'
     # remove temp datei
@@ -75,7 +70,7 @@ def xml_validator():
     parser = et.XMLParser(schema=val_schema)
 
   try:
-    with open(xml, 'r') as f:
+    with open(xml, 'r', encoding="utf8") as f:
       et.fromstring(f.read(), parser) 
     return True # return true if file is valid
   except et.XMLSchemaError: 
@@ -106,7 +101,7 @@ def show_my_bookings(path):
                                 "Beginn Datum" : dept[8].text
                               } 
   try:
-    with open(file_name, 'w') as file:
+    with open(file_name, 'w', encoding="utf8") as file:
       for elem in my_dict:
         # parse elements and write to csv
         rows.append({ "Name": my_dict[elem]['Name'], "Untertitel": my_dict[elem]['Untertitel'],
@@ -119,7 +114,7 @@ def show_my_bookings(path):
   except IOError:
       print("I/O error")
   finally:
-    with open(file_name) as f:
+    with open(file_name, encoding="utf8") as f:
       # place csv data in output string
       output_string = f.read() + '\n'
     # remove temp file
@@ -127,14 +122,6 @@ def show_my_bookings(path):
 
   return output_string
 
-def show_all_bookings(path):
-  xml_long = os.path.join(sys.path[0], 'kurse.xml')    #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
-  root=et.ElementTree(file=xml_long).getroot()
-  count_elements = et.XPath("count(//veranstaltung)")
-  output_string = 'a'
-  for i in range(0,int(count_elements(root))):
-    output_string = root[i][0].text + ' ' + root[i][2].text + ' ' + root[i][3].text + '\n'
-  return output_string
 
 # server
 async def echo(websocket, path):
@@ -145,7 +132,7 @@ async def echo(websocket, path):
       
     else:
       print(message) 
-      await websocket.send(str(show_all_bookings(message)))
+      await websocket.send(str(show_my_bookings(message)))
 
 
 asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765) )
