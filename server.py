@@ -124,13 +124,13 @@ def show_my_bookings(path):
 
 # server
 async def echo(websocket, path):
-    async for message in websocket:
-        # handle format query
-        if (message == "csv"):
-          await websocket.send(csv_parser())
-        else:
-          print(message) 
-          await websocket.send(str(show_my_bookings(message)))
+  async for message in websocket:
+    # handle format query
+    if (message == "csv"):
+      await websocket.send(csv_parser())
+    else:
+      print(message) 
+      await websocket.send(str(show_my_bookings(message)))
 
 
 asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765) )
