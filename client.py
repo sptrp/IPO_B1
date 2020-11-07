@@ -33,7 +33,10 @@ async def demo():
           choice = '0'
 
           while choice != '9':
+            # Greeting and format
             print("Client %s runs" % client_id)
+
+            # Menu
             print(config['menu']['greet'].value)
             print(config['menu']['data'].value)
             print(config['menu']['book'].value)
@@ -50,13 +53,23 @@ async def demo():
                 print("Do Something 4")
 
             elif choice == "3":
-                #read config file to get actual values
-                config.read("config.cfg")
-                await ws.send(config['misc']['format'].value)
-                # recv() receives data from the server
-                response = await ws.recv()
-                print("\n%s\n" % config['misc']['my_courses'].value + response)
+              # call after format
+              while choice != 'j':
+                print(config['menu']['choose_format'].value)
                 time.sleep(2)
+                choice = input (config['menu']['format_chosen'].value) 
+                
+              #read config file to get actual format value and make query
+              config.read("config.cfg")
+              format = config['misc']['format'].value
+              path = path_constructor(config['misc']['path_client'].value, client_id)
+              data = "{}{}" .format(format, path)
+
+              await ws.send(data)
+              # recv() receives data from the server
+              response = await ws.recv()
+              print("\n%s\n" % config['misc']['my_courses'].value + response)
+              time.sleep(2)
 
             elif choice == "2":
                 print("Do Something 2")
@@ -73,7 +86,6 @@ async def demo():
                 print("I don't understand your choice.")
           
           
-
 # async only runs in an event_loop (https://cheat.readthedocs.io/en/latest/python/asyncio.html#event-loops)
 # run_until_complete() gets demo coroutine as input to execute it
 asyncio.get_event_loop().run_until_complete( demo() )
