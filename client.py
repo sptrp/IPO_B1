@@ -11,11 +11,15 @@ The server simply replies with xml or csv.
 import asyncio
 import websockets
 import time
+import os
 from configupdater import ConfigUpdater
 
 # read config file
 config = ConfigUpdater()
 config.read("config.cfg")
+
+# client id 
+client_id = os.getpid()
 
 def path_constructor(elem, val):
   return "//veranstaltung/buchung[{}={}]" .format(elem, val)
@@ -29,6 +33,7 @@ async def demo():
           choice = '0'
 
           while choice != '9':
+            print("Client %s runs" % client_id)
             print(config['menu']['greet'].value)
             print(config['menu']['data'].value)
             print(config['menu']['book'].value)
