@@ -45,7 +45,13 @@ async def demo():
             
             choice = input (config['menu']['choice'].value)
 
-            if choice == "5":
+            # Exit program
+            if choice == '9':
+              print(config['menu']['bye'].value)
+              time.sleep(2)
+              exit()
+
+            elif choice == "5":
                 print("Go to another menu")
                 second_menu()
 
@@ -54,13 +60,13 @@ async def demo():
 
             # Show my booking
             elif choice == "3":
-              # call after format
+              # Call after format
               while choice != 'j':
                 print(config['menu']['choose_format'].value)
                 time.sleep(2)
                 choice = input (config['menu']['format_chosen'].value)  
                 
-              #read config file to get actual format value and make query
+              # Read config file to get actual format value and make query
               config.read("config.cfg")
               calltype = config['calltype']['show_my_books'].value
               path = path_constructor(config['misc']['path_client'].value, client_id)              
@@ -79,13 +85,13 @@ async def demo():
 
             # Show all courses
             elif choice == "1":
-              # call after format
+              # Call after format
               while choice != 'j':
                 print(config['menu']['choose_format'].value)
                 time.sleep(2)
                 choice = input (config['menu']['format_chosen'].value) 
                 
-              #read config file to get actual format value and make query
+              # Read config file to get actual format value and make query
               config.read("config.cfg")
               calltype = config['calltype']['show_all_courses'].value            
               format = config['misc']['format'].value
@@ -97,11 +103,6 @@ async def demo():
               response = await ws.recv()
               print("\n%s\n" % config['misc']['all_courses'].value + response)
               time.sleep(2)
-
-            elif choice == "9":
-                print(config['menu']['bye'].value)
-                time.sleep(2)
-                exit()
 
             else:
                 print("I don't understand your choice.")

@@ -127,15 +127,14 @@ def show_my_bookings(path):
 async def echo(websocket, path):
   async for message in websocket:
 
-    calltype = message[0:3]
-    format = message[-3:]
+    calltype = message[:3]
 
     if (calltype == 'acs'):
+      format = message[-3:]
       await websocket.send(csv_parser())
       
     elif (calltype == 'abk'):
-      print(message) 
-      print(format)
+      format = message[-3:]
       await websocket.send(str(show_my_bookings(message)))
 
 
