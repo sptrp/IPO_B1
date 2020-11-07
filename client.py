@@ -63,9 +63,10 @@ async def demo():
               config.read("config.cfg")
               format = config['misc']['format'].value
               path = path_constructor(config['misc']['path_client'].value, client_id)
-              data = "{}{}" .format(format, path)
 
-              await ws.send(data)
+              #data = "{}{}" .format(calltype, path, format)
+
+              await ws.send("asdasd")
               # recv() receives data from the server
               response = await ws.recv()
               print("\n%s\n" % config['misc']['my_courses'].value + response)
