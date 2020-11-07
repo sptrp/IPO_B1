@@ -24,8 +24,8 @@ Hinweise:
 
 Funktion "Daten abrufen":
 
-1. Ein Client ruft vom Server eine Liste der verfügbaren Kurse ab. Zu den Daten gehören <name> und <untertitel> und (relevant für den nächsten Schritt) die Beschreibung des gesamten Schema sowie <guid> oder <nummer>.  
-2. Ein Client ruft anhand der im Schema hinterlegten Elemente bzw. Attribute konkrete (ausgewählte) Daten (Elemente bzw. Attribute) ab (<guid> bzw. <nummer> sind zur eindeutigen Kursreferenz erforderlich).  
+1. Ein Client ruft vom Server eine Liste der verfügbaren Kurse ab. Zu den Daten gehören "<name>" und "<untertitel>" und (relevant für den nächsten Schritt) die Beschreibung des gesamten Schema sowie "<guid>" oder "<nummer>".  
+2. Ein Client ruft anhand der im Schema hinterlegten Elemente bzw. Attribute konkrete (ausgewählte) Daten (Elemente bzw. Attribute) ab ("<guid>" bzw. "<nummer>" sind zur eindeutigen Kursreferenz erforderlich).  
    Hinweis: Je nach angegebenen Daten kann dies einen konkreten Kurs oder mehrere Kurse betreffen.  
 3. Der Server liefert die ausgewählten Daten im gewünschten Format (siehe weitere Anforderungen im Abschnitt Aufgabenstellung) an den Client.  
 4. Ein Client gibt die abgerufenen Daten (auf der Konsole in lesbarem Format) aus.
