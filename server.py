@@ -26,7 +26,9 @@ curr_format = ""
 def xml_parser():
   tree = et.parse(xml)
   root = tree.getroot()
-  return root
+
+  output_string = et.tostring(root, encoding='utf8', method='xml')
+  return output_string
 
 # parse kurse_snippet and return csv
 def csv_parser():
@@ -131,7 +133,7 @@ async def echo(websocket, path):
 
     if (calltype == 'acs'):
       format = message[-3:]
-      await websocket.send(csv_parser())
+      await websocket.send(xml_parser())
       
     elif (calltype == 'abk'):
       format = message[-3:]

@@ -105,7 +105,8 @@ async def demo():
               time.sleep(2)
 
             else:
-                print("I don't understand your choice.")
+                print(config['menu']['repeat'].value)
+                time.sleep(2)
           
           
 # async only runs in an event_loop (https://cheat.readthedocs.io/en/latest/python/asyncio.html#event-loops)
