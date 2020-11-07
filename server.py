@@ -19,16 +19,35 @@ import os
 # logger
 logging.basicConfig(level=logging.DEBUG)
 
-xml = os.path.join(sys.path[0], 'kurse.xml')    #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
+xml = os.path.join(sys.path[0], 'kurse_snippet.xml')    #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
 curr_format = ""
 
 def xml_parser():
   tree = et.parse(xml)
   root = tree.getroot()
-
   output_string = et.tostring(root, encoding='utf8', method='xml')
-  return output_string
+
+  # Split message on 15 chunks, because it's too big (Nikolai's advice)
+  first_chunk = output_string[0 : 123460]
+  second_chunk = output_string[123460 : 246920]
+  third_chunk = output_string[246920 : 493840]
+  third_chunk = output_string[493840 : 987680]
+  fourth_chunk = output_string[987680 : 1975360]
+  fifth_chunk = output_string[1975360 : 2963040]
+  sixth_chunk = output_string[2963040 : 3950720]
+  seventh_chunk = output_string[3950720 : 4938400]
+  eighth_chunk = output_string[4938400 : 5926080]
+  ninth_chunk = output_string[5926080 : 6913760]
+  ninth_chunk = output_string[5926080 : 6913760]
+  tenth_chunk = output_string[6913760 : 7913760]
+  eleventh_chunk = output_string[7913760 : 8913760]
+  twelth_chunk = output_string[8913760 : 9913760]
+  thirteenth_chunk = output_string[9913760 : 10913760]
+  fourteenth_chunk = output_string[10913760 : 11913760]
+  fifteenth_chunk = output_string[11913760 : -1]
+
+  return fifteenth_chunk
 
 # parse kurse_snippet and return csv
 def csv_parser():
@@ -90,6 +109,8 @@ def show_my_bookings(path):
   root = xml_parser()
   my_dict = {}
   rows = []
+  tree = et.parse(xml)
+  root = tree.getroot()
   cols = [' Name', ' Untertitel', ' Minimale Teilnehmerzahl', ' Maximale Teilnehmerzahl', ' Beginn Datum']
   # give the temp data distinct name
   file_name = 'my_courses.%s.csv' % os.getpid()
@@ -137,10 +158,12 @@ async def echo(websocket, path):
       
     elif (calltype == 'abk'):
       format = message[-3:]
-      await websocket.send(str(show_my_bookings(message)))
+      path = message[3:-3]
+      print(path)
+      await websocket.send(str(show_my_bookings(path)))
 
 
-asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765) )
+asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765, max_size = None) )
 print("Running service at https//:localhost:8765")
 # run_forever: runs the event loop forever; end loop with stop() method or Ctrl-C
 asyncio.get_event_loop().run_forever()

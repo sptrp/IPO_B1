@@ -101,7 +101,8 @@ async def demo():
               await ws.send(data)
               # recv() receives data from the server
               response = await ws.recv()
-              print("\n%s\n" % config['misc']['all_courses'].value + response)
+              print("\n%s\n" % config['misc']['all_courses'].value)
+              print(response)
               time.sleep(2)
 
             else:
