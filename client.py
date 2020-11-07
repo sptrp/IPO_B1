@@ -24,6 +24,15 @@ client_id = os.getpid()
 def path_constructor(elem, val):
   return "//veranstaltung/buchung[{}={}]" .format(elem, val)
 
+def path_constructor_guid(val):
+  return "//veranstaltung[guid={}]" .format(val)
+
+def path_constructor_nummer(val):
+  return "//veranstaltung[nummer={}]" .format(val)
+
+def path_constructor_name(name):
+  return "//veranstaltung[contains(@name, {})]" .format(name)
+
 # async = asynchronous function (coroutine; https://docs.python.org/3/glossary.html#term-coroutine)
 async def demo():
       # connect() creates a client connection and receives a WebSocketClientProtocol object to send/receive WS messages
@@ -31,6 +40,7 @@ async def demo():
 
           # navigation menu
           choice = '0'
+          subchoice = '0'
 
           while choice != '9':
             # Greeting and format
@@ -49,7 +59,7 @@ async def demo():
             if choice == '9':
               print(config['menu']['bye'].value)
               time.sleep(2)
-              exit()
+              os._exit(1)   #Quelle: https://stackoverflow.com/questions/173278/is-there-a-way-to-prevent-a-systemexit-exception-raised-from-sys-exit-from-bei bypasses exceptions
 
             elif choice == "5":
                 print("Go to another menu")
@@ -71,7 +81,8 @@ async def demo():
               calltype = config['calltype']['show_my_books'].value
               path = path_constructor(config['misc']['path_client'].value, client_id)              
               format = config['misc']['format'].value
-
+              print(path)
+              print (path_constructor_name('Englisch'))
               data = "{}{}{}" .format(calltype, path, format)
 
               await ws.send(data)
@@ -83,29 +94,70 @@ async def demo():
             elif choice == "2":
                 print("Do Something 2")
 
-            # Show all courses
+            # show data
             elif choice == "1":
               # Call after format
               while choice != 'j':
                 print(config['menu']['choose_format'].value)
-                time.sleep(2)
+                time.sleep(1)
                 choice = input (config['menu']['format_chosen'].value) 
-                
-              # Read config file to get actual format value and make query
-              config.read("config.cfg")
-              calltype = config['calltype']['show_all_courses'].value            
-              format = config['misc']['format'].value
+                config.read("config.cfg")
+                format = config['misc']['format'].value  
 
-              data = "{}{}" .format(calltype, format)
+              #Print submenu for data
+              print(config['submenu2']['title'].value)
+              print(config['submenu2']['alle'].value)
+              print(config['submenu2']['guid'].value)
+              print(config['submenu2']['nummer'].value)
+              print(config['submenu2']['name'].value)
+              print(config['submenu2']['untertitel'].value)
+              print(config['submenu2']['back'].value)
+              time.sleep(1)
+              subchoice = input(config['submenu2']['choice'].value)
+              print(subchoice)
 
-              await ws.send(data)
-              # recv() receives data from the server
-              response = await ws.recv()
-              print("\n%s\n" % config['misc']['all_courses'].value + response)
-              time.sleep(2)
+              #show ALL courses
+              if subchoice == "1":
+                # Read config file to get query
+                config.read("config.cfg")
+                calltype = config['calltype']['show_all_courses'].value            
+                data = "{}{}" .format(calltype, format)
+                await ws.send(data)
+                # recv() receives data from the server
+                response = await ws.recv()
+                print("\n%s\n" % config['misc']['all_courses'].value + response)
+                time.sleep(2)
+
+              #sort with guid
+              elif subchoice == "2":
+                # Read config file to get query
+                config.read("config.cfg")
+                calltype = config['calltype']['filterguid'].value
+                path = path_constructor_guid(input("Bitte GUID angeben: "))      
+                print(path)
+                data = "{}{}{}" .format(calltype, path, format)
+                print(data)
+                await ws.send(data)
+                # recv() receives data from the server
+                response = await ws.recv()
+                print("\n%s\n" % config['misc']['all_courses'].value + response)
+                time.sleep(2)
+              #sort with nummer    
+              elif subchoice == "3":
+                  print("SUBCHOISE 3 ")
+              #sort with names
+              elif subchoice == "4":
+                  print("E 4")
+              #sort with subtitles    
+              elif subchoice == "5":
+                  print("E 5")                      
+              else:
+                  print("Looping!")
+                  choice = 0
 
             else:
-                print("I don't understand your choice.")
+                print(config['menu']['repeat'].value)
+                time.sleep(2)
           
           
 # async only runs in an event_loop (https://cheat.readthedocs.io/en/latest/python/asyncio.html#event-loops)
