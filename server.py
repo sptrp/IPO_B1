@@ -19,8 +19,9 @@ import os
 # logger
 logging.basicConfig(level=logging.DEBUG)
 
-xml = os.path.join(sys.path[0], 'kurse_snippet.xml')    #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
+xml = os.path.join(sys.path[0], 'kurse.xml')    #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
+curr_format = ""
 
 def process_element(catalog, *args, **kwargs):
     for child in catalog.getchildren():
@@ -138,12 +139,9 @@ def show_all_bookings(path):
 # server
 async def echo(websocket, path):
   async for message in websocket:
-    # handle format query
-    if (message == "csv"):
-      await websocket.send(csv_parser())
 
-    elif (message == "asdasd"):
-      await websocket.send("Test")
+    if (message == "asdasd"):
+      await websocket.send(csv_parser())
       
     else:
       print(message) 
