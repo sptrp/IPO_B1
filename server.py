@@ -19,8 +19,8 @@ import os
 # logger
 logging.basicConfig(level=logging.DEBUG)
 
-xml = "kurse_snippet.xml"
-schema = "kurse.xsd"
+xml = os.path.join(sys.path[0], 'kurse_snippet.xml')    #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
+schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
 
 def xml_parser():
   tree = et.parse(xml)
@@ -54,8 +54,8 @@ def csv_parser():
     with open(file_name) as f:
       # place csv data in output string
       output_string = f.read() + '\n'
-      # remove temp datei
-      os.remove(file_name)
+    # remove temp datei
+    os.remove(file_name)
   
   return output_string 
 
@@ -64,15 +64,15 @@ def csv_parser():
 def xml_validator():
   # create parser from xsd schema
   with open(schema, 'rb') as f:
-    schema_root = etree.XML(f.read())
-    val_schema = etree.XMLSchema(schema_root)
-    parser = etree.XMLParser(schema=val_schema)
+    schema_root = et.XML(f.read())
+    val_schema = et.XMLSchema(schema_root)
+    parser = et.XMLParser(schema=val_schema)
 
   try:
     with open(xml, 'r') as f:
-      etree.fromstring(f.read(), parser) 
+      et.fromstring(f.read(), parser) 
     return True # return true if file is valid
-  except etree.XMLSchemaError: 
+  except et.XMLSchemaError: 
     return False # return false and exception if not
 
 # select concrete element
@@ -116,8 +116,8 @@ def show_my_bookings(path):
     with open(file_name) as f:
       # place csv data in output string
       output_string = f.read() + '\n'
-      # remove temp file
-      os.remove(file_name)
+    # remove temp file
+    os.remove(file_name)
 
   return output_string
 
