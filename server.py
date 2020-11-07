@@ -87,7 +87,7 @@ def show_my_bookings(path):
   root = xml_parser()
   my_dict = {}
   rows = []
-  cols = ['Name', 'Untertitel', 'Minimale Teilnehmerzahl', 'Maximale Teilnehmerzahl', 'Beginn Datum']
+  cols = [' Name', ' Untertitel', ' Minimale Teilnehmerzahl', ' Maximale Teilnehmerzahl', ' Beginn Datum']
   # give the temp data distinct name
   file_name = 'my_courses.%s.csv' % os.getpid()
 
@@ -128,6 +128,10 @@ async def echo(websocket, path):
     # handle format query
     if (message == "csv"):
       await websocket.send(csv_parser())
+
+    elif (message == "asdasd"):
+      await websocket.send("Test")
+      
     else:
       print(message) 
       await websocket.send(str(show_my_bookings(message)))
