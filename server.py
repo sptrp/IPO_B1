@@ -105,8 +105,12 @@ def xml_element_selector(path):
 
   return list
 
+<<<<<<< Updated upstream
 def show_path_bookings(path):
   root = xml_parser()
+=======
+def show_my_bookings(path):
+>>>>>>> Stashed changes
   my_dict = {}
   rows = []
   tree = et.parse(xml)
@@ -122,15 +126,15 @@ def show_path_bookings(path):
                                 "Minimale Teilnehmerzahl" : dept[5].text,
                                 "Maximale Teilnehmerzahl" : dept[6].text,
                                 "Beginn Datum" : dept[8].text
-                              } 
+                              }                         
   try:
-    with open(file_name, 'w', encoding="utf8") as file:
+    with open(file_name, 'w') as file:
       for elem in my_dict:
         # parse elements and write to csv
-        rows.append({ "Name": my_dict[elem]['Name'], "Untertitel": my_dict[elem]['Untertitel'],
-                      "Minimale Teilnehmerzahl": my_dict[elem]['Minimale Teilnehmerzahl'], 
-                      "Maximale Teilnehmerzahl": my_dict[elem]['Maximale Teilnehmerzahl'], 
-                      "Beginn Datum": my_dict[elem]['Beginn Datum'] 
+        rows.append({ " Name": my_dict[elem]['Name'], " Untertitel": my_dict[elem]['Untertitel'],
+                      " Minimale Teilnehmerzahl": my_dict[elem]['Minimale Teilnehmerzahl'], 
+                      " Maximale Teilnehmerzahl": my_dict[elem]['Maximale Teilnehmerzahl'], 
+                      " Beginn Datum": my_dict[elem]['Beginn Datum'] 
                     })
       dataframe = pd.DataFrame(rows, columns = cols) 
       dataframe.to_csv(file_name)

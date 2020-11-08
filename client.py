@@ -77,6 +77,7 @@ async def demo():
               config.read("config.cfg")
               calltype = config['calltype']['show_some_books'].value
               path = path_constructor(config['misc']['path_client'].value, client_id)              
+          
               format = config['misc']['format'].value
               data = "{}{}{}" .format(calltype, path, format)
 
