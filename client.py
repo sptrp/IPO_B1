@@ -25,13 +25,6 @@ client_id = '12345' #os.getpid()
 def path_constructor(kunde, val):
   return "//veranstaltung/buchung[{}={}]" .format(kunde, val)
 
-<<<<<<< HEAD
-def path_constructor_numid(elem, val):
-  return "//veranstaltung[{}='{}']" .format(elem, val)
-
-def path_constructor_name(elem, name):
-  return "//veranstaltung[text()='{}']" .format(name)
-=======
 # path for specific attribute
 def path_constructor_numid(attribute, val):
   return "//veranstaltung[{}='{}']" .format(attribute, val)
@@ -43,7 +36,7 @@ def path_constructor_name(string):
 # path for string in text in specific attribute
 def path_constructor_onlyname(attribute, string):
   return "//veranstaltung/{}[contains(text(), '{}')]" .format(attribute, string)  
->>>>>>> stefematik
+
 
 # async = asynchronous function (coroutine; https://docs.python.org/3/glossary.html#term-coroutine)
 async def demo():
