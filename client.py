@@ -112,7 +112,7 @@ async def demo():
                 calltype = config['calltype']['show_some_elems'].value
                 value = input(config['submenu2']['choice_guid'].value)
                 # build request 
-                request = helper.create_elem_request(config, "guid", calltype, value)
+                request = helper.create_elem_request(config, "guid", calltype, value, client_id)
                 await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 # recv() receives data from the server
                 response = await ws.recv()

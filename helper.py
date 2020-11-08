@@ -8,7 +8,7 @@ def create_config(config, config_path):
   with open(config_path, 'w') as configfile:
     start_cfg = """
 [misc]
-format = xml
+format: xml
 all_courses: All courses:
 my_courses: My courses:
 path_client: kunde
@@ -77,7 +77,7 @@ def create_request(config, calltype, client_id):
         )
 
 # create request for single element 
-def create_elem_request(config, elem, calltype, value): 
+def create_elem_request(config, elem, calltype, value, client_id): 
   return E.request(
             E.course_request(
                 E.format(config['misc']['format'].value),
