@@ -21,7 +21,7 @@ import helper
 # logger
 logging.basicConfig(level=logging.DEBUG)
 
-xml = os.path.join(sys.path[0], 'kurse_snippet.xml')    #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
+xml = os.path.join(sys.path[0], 'kurse.xml')    #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
 request_schema = os.path.join(sys.path[0], 'request.xsd')  
 
@@ -30,30 +30,32 @@ request_schema = os.path.join(sys.path[0], 'request.xsd')
 def find_all_courses(format):
   tree = et.parse(xml)
   root = tree.getroot()
+  chunk = []
 
   if (format == 'xml'):
     output_string = et.tostring(root, encoding='utf8', method='xml')
 
     # Split message on 15 chunks, because it's too big (Nikolai's advice)
-    first_chunk = output_string[0 : 123460]
-    second_chunk = output_string[123460 : 246920]
-    third_chunk = output_string[246920 : 493840]
-    third_chunk = output_string[493840 : 987680]
-    fourth_chunk = output_string[987680 : 1975360]
-    fifth_chunk = output_string[1975360 : 2963040]
-    sixth_chunk = output_string[2963040 : 3950720]
-    seventh_chunk = output_string[3950720 : 4938400]
-    eighth_chunk = output_string[4938400 : 5926080]
-    ninth_chunk = output_string[5926080 : 6913760]
-    ninth_chunk = output_string[5926080 : 6913760]
-    tenth_chunk = output_string[6913760 : 7913760]
-    eleventh_chunk = output_string[7913760 : 8913760]
-    twelth_chunk = output_string[8913760 : 9913760]
-    thirteenth_chunk = output_string[9913760 : 10913760]
-    fourteenth_chunk = output_string[10913760 : 11913760]
-    fifteenth_chunk = output_string[11913760 : -1]
+    chunk.append(output_string[0 : 123460])
+    chunk.append(output_string[123460 : 246920])
+    chunk.append(output_string[246920 : 493840])
+    chunk.append(output_string[493840 : 987680])
+    chunk.append(output_string[987680 : 1975360])
+    chunk.append(output_string[1975360 : 2963040])
+    chunk.append(output_string[2963040 : 3950720])
+    chunk.append(output_string[3950720 : 4938400])
+    chunk.append(output_string[4938400 : 5926080])
+    chunk.append(output_string[5926080 : 6913760])
+    chunk.append(output_string[5926080 : 6913760])
+    chunk.append(output_string[6913760 : 7913760])
+    chunk.append(output_string[7913760 : 8913760])
+    chunk.append(output_string[8913760 : 9913760])
+    chunk.append(output_string[9913760 : 10913760])
+    chunk.append(output_string[10913760 : 11913760])
+    chunk.append(output_string[11913760 : -1])
 
-    return 'test'
+    #print(twelth_chunk)
+    return chunk
 
   else: 
     rows = []
@@ -170,8 +172,14 @@ async def echo(websocket, path):
       calltype = tree.xpath('//calltype')[0].text
 
       if (calltype == 'acs'):
-        await websocket.send(find_all_courses(format))
-          
+        if (format == 'xml'):
+          response = find_all_courses(format)
+
+          for elem in response:
+            await websocket.send(elem)
+        else: 
+          await websocket.send(str(find_all_courses(format)))
+
       elif (calltype == 'sse'):
         elem = tree.xpath('//element')[0].text
         value = tree.xpath('//value')[0].text
