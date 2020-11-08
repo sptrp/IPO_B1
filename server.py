@@ -156,7 +156,7 @@ async def echo(websocket, path):
       format = message[-3:]
       await websocket.send(xml_parser())
       
-    elif (calltype == 'abk' or calltype == 'fgu'):
+    elif (calltype == 'sse'):
       format = message[-3:]
       path = message[3:-3]
       print(path)

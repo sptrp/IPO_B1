@@ -75,7 +75,7 @@ async def demo():
                 
               # Read config file to get actual format value and make query
               config.read("config.cfg")
-              calltype = config['calltype']['show_some_books'].value
+              calltype = config['calltype']['show_some_elems'].value
               path = path_constructor(config['misc']['path_client'].value, client_id)              
           
               format = config['misc']['format'].value
@@ -128,7 +128,7 @@ async def demo():
               elif subchoice == "2":
                 # Read config file to get query
                 config.read("config.cfg")
-                calltype = config['calltype']['show_some_books'].value
+                calltype = config['calltype']['show_some_elems'].value
                 path = path_constructor_numid('guid', input("Bitte GUID angeben: "))      
                 data = "{}{}{}" .format(calltype, path, format)
                 await ws.send(data)
@@ -141,7 +141,7 @@ async def demo():
               elif subchoice == "3":
                 # Read config file to get query
                 config.read("config.cfg")
-                calltype = config['calltype']['show_some_books'].value
+                calltype = config['calltype']['show_some_elems'].value
                 path = path_constructor_numid('nummer', input("Bitte Nummer angeben: "))      
                 data = "{}{}{}" .format(calltype, path, format)
                 await ws.send(data)
@@ -154,7 +154,7 @@ async def demo():
               elif subchoice == "4":
                 # Read config file to get query
                 config.read("config.cfg")
-                calltype = config['calltype']['show_some_books'].value
+                calltype = config['calltype']['show_some_elems'].value
                 path = path_constructor_name('name', input("Bitte Suchbegriff angeben: "))      
                 data = "{}{}{}" .format(calltype, path, format)
                 await ws.send(data)
@@ -167,7 +167,7 @@ async def demo():
               elif subchoice == "5":
                 # Read config file to get query
                 config.read("config.cfg")
-                calltype = config['calltype']['show_some_books'].value
+                calltype = config['calltype']['show_some_elems'].value
                 path = path_constructor_name('untertitel', input("Bitte Suchbegriff angeben: "))      
                 data = "{}{}{}" .format(calltype, path, format)
                 await ws.send(data)
