@@ -23,6 +23,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 xml = os.path.join(sys.path[0], 'kurse_snippet.xml')    #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
+request_schema = os.path.join(sys.path[0], 'request.xsd')  
 
 def xml_parser():
   tree = et.parse(xml)
@@ -82,22 +83,6 @@ def csv_parser():
   
   return output_string 
 
-
-# validator for incoming xml  
-def xml_validator():
-  # create parser from xsd schema
-  with open(schema, 'rb') as f:
-    schema_root = et.XML(f.read())
-    val_schema = et.XMLSchema(schema_root)
-    parser = et.XMLParser(schema=val_schema)
-
-  try:
-    with open(xml, 'r', encoding="utf8") as f:
-      et.fromstring(f.read(), parser) 
-    return True # return true if file is valid
-  except et.XMLSchemaError: 
-    return False # return false and exception if not
-
 # select concrete element
 def xml_element_selector(path):
 
@@ -146,38 +131,56 @@ def find_elems_from_query(path):
 
   return output_string
 
+# validator for incoming xml  
+def xml_validator(input, schema):
+  # create parser from xsd schema
+  with open(schema, 'rb') as f:
+    schema_root = et.XML(f.read())
+    val_schema = et.XMLSchema(schema_root)
+    parser = et.XMLParser(schema=val_schema)
+
+  try:
+    et.fromstring(input, parser) 
+    return True # return true if file is valid
+  except et.XMLSyntaxError: 
+    print("Request Fehler: Falscher Request") # return exception and error message if not
 
 # server
 async def echo(websocket, path):
   async for message in websocket:
     
-    tree = et.ElementTree(et.fromstring(message))
-    # parse format and calltype from request
-    format = tree.xpath('//format')[0].text
-    calltype = tree.xpath('//calltype')[0].text
+    # validate request
+    if xml_validator(message, request_schema):
 
-    if (calltype == 'acs'):
-      await websocket.send(xml_parser())
+      tree = et.ElementTree(et.fromstring(message))
+      # parse format and calltype from request
+      format = tree.xpath('//format')[0].text
+      calltype = tree.xpath('//calltype')[0].text
 
-    elif (calltype == 'sse'):
-      elem = tree.xpath('//element')[0].text
-      value = tree.xpath('//value')[0].text
-      # build path
-      if (elem == 'divers'):
-        path = helper.path_constructor_divers(value)
-      else: 
-        path = helper.path_constructor_elem(elem, value) 
+      if (calltype == 'acs'):
+        await websocket.send(xml_parser())
 
-      await websocket.send(str(find_elems_from_query(path)))
+      elif (calltype == 'sse'):
+        elem = tree.xpath('//element')[0].text
+        value = tree.xpath('//value')[0].text
+        # build path
+        if (elem == 'divers'):
+          path = helper.path_constructor_divers(value)
+        else: 
+          path = helper.path_constructor_elem(elem, value) 
 
-    elif (calltype == 'mcs'):
-      # parse client id from request
-      client_id = tree.xpath('//client')[0].text
-      # build path
-      path = helper.path_constructor('kunde', client_id)
-          
-      await websocket.send(str(find_elems_from_query(path)))
+        await websocket.send(str(find_elems_from_query(path)))
 
+      elif (calltype == 'mcs'):
+        # parse client id from request
+        client_id = tree.xpath('//client')[0].text
+        # build path
+        path = helper.path_constructor('kunde', client_id)
+            
+        await websocket.send(str(find_elems_from_query(path)))
+
+    else:
+        await websocket.send('Falscher Request')
 
 asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765, max_size = None) )
 print("Running service at https//:localhost:8765")

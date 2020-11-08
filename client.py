@@ -80,7 +80,6 @@ async def demo():
 
             # show data
             elif choice == "1":
-
               #Print submenu for data
               print(config['submenu2']['title'].value)
               print(config['submenu2']['alle'].value)
