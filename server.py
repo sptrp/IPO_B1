@@ -26,7 +26,7 @@ schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, W
 request_schema = os.path.join(sys.path[0], 'request.xsd')  
 
 
-# parse kurse_snippet and return csv
+# parse kurse and return xml or csv
 def find_all_courses(format):
   tree = et.parse(xml)
   root = tree.getroot()
@@ -84,14 +84,23 @@ def find_all_courses(format):
     return output_string 
 
 
-def find_elems_from_query(format, path):
+def find_elems_from_query(format, path, calltype):
   # check format
   if (format == 'xml'):
     tree = et.parse(xml)
     root = tree.getroot()
     elems = root.xpath(path)
-    # https://stackoverflow.com/questions/23727696/list-can-not-be-serialized-error-when-using-xpath-with-lxml-etree
-    joined_string = "".join([et.tostring(elem, encoding="unicode", pretty_print=True) for elem in elems])
+    joined_string = ""
+
+    # get ancestors if buchung query
+    if (calltype == 'mcs'):
+      for targ in elems:
+        for dept in targ.xpath('ancestor-or-self::veranstaltung'):
+          joined_string = "".join([et.tostring(dept, encoding="unicode", pretty_print=True)])
+
+    else:
+      # https://stackoverflow.com/questions/23727696/list-can-not-be-serialized-error-when-using-xpath-with-lxml-etree
+      joined_string = "".join([et.tostring(elem, encoding="unicode", pretty_print=True) for elem in elems])
 
     return joined_string
 
@@ -180,7 +189,7 @@ async def echo(websocket, path):
         # build path
         path = helper.path_constructor('kunde', client_id)
             
-        await websocket.send(str(find_elems_from_query(path)))
+        await websocket.send(str(find_elems_from_query(format, path, calltype)))
 
     else:
         await websocket.send('Falscher Request')
