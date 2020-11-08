@@ -1,6 +1,5 @@
 """
-Example uses a WebSockets server for testing purposes (see also https://www.websocket.org/echo.html).
-The server simply replies with xml or csv.
+B1 websocket client
 """
 
 # TODO: 
@@ -14,12 +13,54 @@ import time
 import os
 from configupdater import ConfigUpdater
 
-# read config file
-config = ConfigUpdater()
-config.read("config.cfg")
 
 # client id 
-client_id = '12345' #os.getpid()
+client_id = os.getpid()
+
+# temporary config file path
+config_path = "config.%s.cfg" % os.getpid()
+
+# create config file
+with open(config_path, 'w') as configfile:
+  config = ConfigUpdater()
+  start_cfg = """
+  [misc]
+  format = xml
+  all_courses: All courses:
+  my_courses: My courses:
+  path_client: kunde
+  searched: Found courses:
+
+  [menu]
+  choose_format: Bitte waehlen Sie ein Format in config.cfg. Dafuer muessen Sie die 3. Zeile 'format...' aendern (xml oder csv)
+  format_chosen: Format gewaehlt? j/n : 
+  greet: Bitte waehlen Sie einen Befehl : 
+  data: 1) Daten abrufen
+  book: 2) Kurs buchen
+  my_books: 3) Buchungen anzeigen
+  end: 9) Beenden
+  choice: Wahl eingeben : 
+  bye: Bye bye
+  repeat: Bitte wiederholen Sie die Eingabe.
+
+  [submenu2]
+  title: Bitte waehlen Sie, nach welchen Elementen Sie suchen wollen:
+  alle: 1) Alle Kurse abrufen.
+  guid: 2) Nach GU-ID filtern.
+  nummer: 3) Nach Nummer filtern.
+  name: 4) Nach Stichwort filtern.
+  attribute: 5) Stich innerhalb eines Attributes suchen
+  back: 6) Zurueck.
+  choice: Ihre Wahl: 
+
+  [calltype]
+  show_some_elems: sse
+  show_all_courses: acs
+  show_all_info: asa
+  """
+  config.read_string(start_cfg)
+  config.write(configfile)
+
 
 # path for all booked coursed
 def path_constructor(kunde, val):
@@ -64,6 +105,7 @@ async def demo():
             if choice == '9':
               print(config['menu']['bye'].value)
               time.sleep(0.1)
+              os.remove(config_path)
               os._exit(1)   #Quelle: https://stackoverflow.com/questions/173278/is-there-a-way-to-prevent-a-systemexit-exception-raised-from-sys-exit-from-bei bypasses exceptions
 
             elif choice == "5":
@@ -105,7 +147,7 @@ async def demo():
                 print(config['menu']['choose_format'].value)
                 time.sleep(0.2)
                 choice = input (config['menu']['format_chosen'].value) 
-                config.read("config.cfg")
+                config.read(config_path)
                 format = config['misc']['format'].value  
 
               #Print submenu for data
@@ -123,7 +165,7 @@ async def demo():
               #show ALL courses
               if subchoice == "1":
                 # Read config file to get query
-                config.read("config.cfg")
+                config.read(config_path)
                 calltype = config['calltype']['show_all_courses'].value            
                 data = "{}{}{}" .format(calltype,'path', format)
                 await ws.send(data)
@@ -135,7 +177,7 @@ async def demo():
               #sort with guid
               elif subchoice == "2":
                 # Read config file to get query
-                config.read("config.cfg")
+                config.read(config_path)
                 calltype = config['calltype']['show_some_elems'].value
                 path = path_constructor_numid('guid', input("Bitte GUID angeben: "))      
                 data = "{}{}{}" .format(calltype, path, format)
@@ -148,7 +190,7 @@ async def demo():
               #sort with nummer    
               elif subchoice == "3":
                 # Read config file to get query
-                config.read("config.cfg")
+                config.read(config_path)
                 calltype = config['calltype']['show_some_elems'].value
                 path = path_constructor_numid('nummer', input("Bitte Nummer angeben: "))      
                 data = "{}{}{}" .format(calltype, path, format)
@@ -162,7 +204,7 @@ async def demo():
               #sort with names
               elif subchoice == "4":
                 # Read config file to get query
-                config.read("config.cfg")
+                config.read(config_path)
                 calltype = config['calltype']['show_some_elems'].value
                 path = path_constructor_name('name', input("Bitte Suchbegriff angeben: "))      
 
@@ -176,7 +218,7 @@ async def demo():
               #sort with names
               elif subchoice == "5":
                 # Read config file to get query
-                config.read("config.cfg")
+                config.read(config_path)
                 calltype = config['calltype']['show_some_elems'].value
                 path = path_constructor_name('untertitel', input("Bitte Suchbegriff angeben: "))      
 

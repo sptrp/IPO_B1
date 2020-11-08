@@ -1,4 +1,5 @@
-""" B1 websocket server
+""" 
+B1 websocket server
 """
 
 # TODO: 
@@ -21,7 +22,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 xml = os.path.join(sys.path[0], 'kurse_snippet.xml')    #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
-curr_format = ""
 
 def xml_parser():
   tree = et.parse(xml)
