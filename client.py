@@ -125,10 +125,10 @@ async def demo():
                 # Read config file to get query
                 config.read(config_path)
                 calltype = config['calltype']['show_some_elems'].value
-                path = path_constructor_numid('nummer', input("Bitte Nummer angeben: "))      
-                data = "{}{}{}" .format(calltype, path, format)
-                print("PATH: " + path)
-                await ws.send(data)
+                value = input(config['submenu2']['choice_nummer'].value)
+                # build request 
+                request = helper.create_elem_request(config, "nummer", calltype, value)
+                await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 # recv() receives data from the server
                 response = await ws.recv()
                 print("\n%s\n" % config['misc']['searched'].value + response)
@@ -139,33 +139,37 @@ async def demo():
                 # Read config file to get query
                 config.read(config_path)
                 calltype = config['calltype']['show_some_elems'].value
-                path = path_constructor_name('name', input("Bitte Suchbegriff angeben: "))      
-
-                data = "{}{}{}" .format(calltype, path, format)
-                await ws.send(data)
+                value = input(config['submenu2']['choice_name'].value)
+                # build request 
+                request = helper.create_elem_request(config, "name", calltype, value)
+                await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 # recv() receives data from the server
                 response = await ws.recv()
                 print("\n%s\n" % config['misc']['searched'].value + response)
                 time.sleep(0.1)
 
-              #sort with names
+              #sort with stichwort
               elif subchoice == "5":
                 # Read config file to get query
                 config.read(config_path)
                 calltype = config['calltype']['show_some_elems'].value
-                path = path_constructor_name('untertitel', input("Bitte Suchbegriff angeben: "))      
-
-                data = "{}{}{}" .format(calltype, path, format)
-                await ws.send(data)
+                value = input(config['submenu2']['choice_divers'].value)
+                # build request 
+                request = helper.create_elem_request(config, "divers", calltype, value)
+                await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 # recv() receives data from the server
                 response = await ws.recv()
                 print("\n%s\n" % config['misc']['searched'].value + response)
-                time.sleep(0.1)                
+                time.sleep(0.1)
 
-              else:
+              elif subchoice == "6":
                   print("Hauptmenu....")
                   time.sleep(1)
                   choice = 0
+
+              else:
+                print(config['menu']['repeat'].value)
+                time.sleep(2)
 
             else:
                 print(config['menu']['repeat'].value)

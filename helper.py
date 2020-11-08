@@ -32,11 +32,14 @@ title: Bitte waehlen Sie, nach welchen Elementen Sie suchen wollen:
 alle: 1) Alle Kurse abrufen.
 guid: 2) Nach GU-ID filtern.
 nummer: 3) Nach Nummer filtern.
-name: 4) Nach Stichwort filtern.
-attribute: 5) Stich innerhalb eines Attributes suchen
+name: 4) Nach Name filtern.
+attribute: 5) Überall suchen
 back: 6) Zurueck.
 choice: Ihre Wahl: 
-choice_guid: Bitte GUID angeben : 
+choice_guid: Bitte GUID angeben :
+choice_nummer: Bitte Nummer angeben : 
+choice_name: Bitte Name angeben :
+choice_divers: Bitte Value angeben :  
 
 [calltype]
 show_some_elems: sse
@@ -88,13 +91,13 @@ def path_constructor(kunde, val):
   return "//veranstaltung/buchung[{}={}]" .format(kunde, val)
 
 # path for specific attribute
-def path_constructor_numid(attribute, val):
+def path_constructor_elem(attribute, val):
   return "//veranstaltung[{}='{}']" .format(attribute, val)
 
 # path for string in text
-def path_constructor_name(string):
-  return "//veranstaltung/*[contains(text(), '{}')]" .format(string)
+def path_constructor_divers(val):
+  return "//veranstaltung/*[contains(text(), '{}')]" .format(val)
 
 # path for string in text in specific attribute
-def path_constructor_onlyname(attribute, string):
-  return "//veranstaltung/{}[contains(text(), '{}')]" .format(attribute, string)  
+def path_constructor_onlyname(attribute, val):
+  return "//veranstaltung/{}[contains(text(), '{}')]" .format(attribute, val)  

@@ -163,14 +163,19 @@ async def echo(websocket, path):
       elem = tree.xpath('//element')[0].text
       value = tree.xpath('//value')[0].text
       # build path
-      path = helper.path_constructor_numid(elem, value)  
+      if (elem == 'divers'):
+        path = helper.path_constructor_divers(value)
+      else: 
+        path = helper.path_constructor_elem(elem, value) 
+
       await websocket.send(str(find_elems_from_query(path)))
 
     elif (calltype == 'mcs'):
       # parse client id from request
       client_id = tree.xpath('//client')[0].text
       # build path
-      path = helper.path_constructor('kunde', client_id)    
+      path = helper.path_constructor('kunde', client_id)
+          
       await websocket.send(str(find_elems_from_query(path)))
 
 
