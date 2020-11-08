@@ -46,13 +46,13 @@
             <uri>http://www.vhsit.berlin.de/VHSKURSE/BusinessPages/CourseDetail.aspx?id=569306</uri>
         </webadresse>
         <buchung>
-            <kunde>75356</kunde>
+            <kunde>75875</kunde>
         </buchung>   
     </veranstaltung>
     <veranstaltung>
         <guid>578841</guid>
         <nummer>TK-4304-1-H</nummer>
-        <name>Spanisch A1.2 - etwas schneller! </name>
+        <name>Spanisch A1.2 - etwas schneller!</name>
         <untertitel>ein Intensivkurs </untertitel>
         <dvv_kategorie version="1.0">4.22</dvv_kategorie>
         <minimale_teilnehmerzahl>8</minimale_teilnehmerzahl>
@@ -102,7 +102,7 @@ Vorkenntnisse: A1.1</text>
             <uri>http://www.vhsit.berlin.de/VHSKURSE/BusinessPages/CourseDetail.aspx?id=578841</uri>
         </webadresse>
         <buchung>
-            <kunde>75356</kunde>
+            <kunde>75875</kunde>
         </buchung>   
     </veranstaltung>
     <veranstaltung>

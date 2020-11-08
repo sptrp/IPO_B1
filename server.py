@@ -48,7 +48,7 @@ def xml_parser():
   fourteenth_chunk = output_string[10913760 : 11913760]
   fifteenth_chunk = output_string[11913760 : -1]
 
-  return fifteenth_chunk
+  return "test"
 
 # parse kurse_snippet and return csv
 def csv_parser():
@@ -158,12 +158,24 @@ async def echo(websocket, path):
 
     if (calltype == 'acs'):
       await websocket.send(xml_parser())
-      
+
     elif (calltype == 'sse'):
+      elem = tree.xpath('//element')[0].text
+      value = tree.xpath('//value')[0].text
+      # build path
+      if (elem == 'divers'):
+        path = helper.path_constructor_divers(value)
+      else: 
+        path = helper.path_constructor_elem(elem, value) 
+
+      await websocket.send(str(find_elems_from_query(path)))
+
+    elif (calltype == 'mcs'):
       # parse client id from request
       client_id = tree.xpath('//client')[0].text
       # build path
-      path = helper.path_constructor('kunde', client_id)    
+      path = helper.path_constructor('kunde', client_id)
+          
       await websocket.send(str(find_elems_from_query(path)))
 
 
