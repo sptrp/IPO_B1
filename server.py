@@ -25,74 +25,73 @@ xml = os.path.join(sys.path[0], 'kurse_snippet.xml')    #Quelle: https://stackov
 schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
 request_schema = os.path.join(sys.path[0], 'request.xsd')  
 
-def xml_parser():
-  tree = et.parse(xml)
-  root = tree.getroot()
-  output_string = et.tostring(root, encoding='utf8', method='xml')
-
-  # Split message on 15 chunks, because it's too big (Nikolai's advice)
-  first_chunk = output_string[0 : 123460]
-  second_chunk = output_string[123460 : 246920]
-  third_chunk = output_string[246920 : 493840]
-  third_chunk = output_string[493840 : 987680]
-  fourth_chunk = output_string[987680 : 1975360]
-  fifth_chunk = output_string[1975360 : 2963040]
-  sixth_chunk = output_string[2963040 : 3950720]
-  seventh_chunk = output_string[3950720 : 4938400]
-  eighth_chunk = output_string[4938400 : 5926080]
-  ninth_chunk = output_string[5926080 : 6913760]
-  ninth_chunk = output_string[5926080 : 6913760]
-  tenth_chunk = output_string[6913760 : 7913760]
-  eleventh_chunk = output_string[7913760 : 8913760]
-  twelth_chunk = output_string[8913760 : 9913760]
-  thirteenth_chunk = output_string[9913760 : 10913760]
-  fourteenth_chunk = output_string[10913760 : 11913760]
-  fifteenth_chunk = output_string[11913760 : -1]
-
-  return "test"
 
 # parse kurse_snippet and return csv
-def csv_parser():
+def course_parser(format):
   tree = et.parse(xml)
   root = tree.getroot()
 
-  rows = []
-  spamreader = ''
-  cols = ['Guid', 'Nummer', 'Name', 'Untertitel']
-  # give the temp data distinct name
-  file_name = 'courses.%s.csv' % os.getpid()
+  if (format == 'xml'):
+    output_string = et.tostring(root, encoding='utf8', method='xml')
 
-  try:
-    with open(file_name, 'w', newline='', encoding="utf8") as file:
-      # parse elements and write to csv
-      for elem in root:
+    # Split message on 15 chunks, because it's too big (Nikolai's advice)
+    first_chunk = output_string[0 : 123460]
+    second_chunk = output_string[123460 : 246920]
+    third_chunk = output_string[246920 : 493840]
+    third_chunk = output_string[493840 : 987680]
+    fourth_chunk = output_string[987680 : 1975360]
+    fifth_chunk = output_string[1975360 : 2963040]
+    sixth_chunk = output_string[2963040 : 3950720]
+    seventh_chunk = output_string[3950720 : 4938400]
+    eighth_chunk = output_string[4938400 : 5926080]
+    ninth_chunk = output_string[5926080 : 6913760]
+    ninth_chunk = output_string[5926080 : 6913760]
+    tenth_chunk = output_string[6913760 : 7913760]
+    eleventh_chunk = output_string[7913760 : 8913760]
+    twelth_chunk = output_string[8913760 : 9913760]
+    thirteenth_chunk = output_string[9913760 : 10913760]
+    fourteenth_chunk = output_string[10913760 : 11913760]
+    fifteenth_chunk = output_string[11913760 : -1]
 
-        rows.append({ "Guid": elem.find('guid').text, "Nummer": elem.find('nummer').text, 
-                      "Name": elem.find('name').text, "Untertitel": elem.find('untertitel').text 
-                    })
-      dataframe = pd.DataFrame(rows, columns = cols) 
-      dataframe.to_csv(file_name)
-  except IOError:
-    print("I/O error")
-  finally:
-    with open(file_name, encoding="utf8") as f:
-      # place csv data in output string
-      output_string = f.read() + '\n'
-    # remove temp datei
-    os.remove(file_name)
-  
-  return output_string 
+    return 'test'
 
-# select concrete element
-def xml_element_selector(path):
+  else: 
+    rows = []
+    spamreader = ''
+    cols = ['Guid', 'Nummer', 'Name', 'Untertitel']
+    # give the temp data distinct name
+    file_name = 'courses.%s.csv' % os.getpid()
 
-  root = xml_parser()
-  list = root.xpath(path)
+    try:
+      with open(file_name, 'w', newline='', encoding="utf8") as file:
+        # parse elements and write to csv
+        for elem in root:
 
-  return list
+          rows.append({ "Guid": elem.find('guid').text, "Nummer": elem.find('nummer').text, 
+                        "Name": elem.find('name').text, "Untertitel": elem.find('untertitel').text 
+                      })
+        dataframe = pd.DataFrame(rows, columns = cols) 
+        dataframe.to_csv(file_name)
+    except IOError:
+      print("I/O error")
+    finally:
+      with open(file_name, encoding="utf8") as f:
+        # place csv data in output string
+        output_string = f.read() + '\n'
+      # remove temp datei
+      os.remove(file_name)
+    
+    return output_string 
 
 
-def find_elems_from_query(path):
+def find_elems_from_query_xml(path):
+  tree = et.parse(xml)
+  root = tree.getroot()
+  elems = root.xpath(path)
+
+  return et.tostring(elems, pretty_print=True)
+
+def find_elems_from_query_csv(path):
   my_dict = {}
   rows = []
   tree = et.parse(xml)
@@ -158,8 +157,8 @@ async def echo(websocket, path):
       calltype = tree.xpath('//calltype')[0].text
 
       if (calltype == 'acs'):
-        await websocket.send(xml_parser())
-
+        await websocket.send(course_parser(format))
+          
       elif (calltype == 'sse'):
         elem = tree.xpath('//element')[0].text
         value = tree.xpath('//value')[0].text
@@ -169,7 +168,7 @@ async def echo(websocket, path):
         else: 
           path = helper.path_constructor_elem(elem, value) 
 
-        await websocket.send(str(find_elems_from_query(path)))
+        await websocket.send(str(find_elems_from_query_xml(path)))
 
       elif (calltype == 'mcs'):
         # parse client id from request
