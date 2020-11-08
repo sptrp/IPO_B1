@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <kunde>
   <id>11201</id>
-  <vorname>vJ%</vorname>
-  <nachname>)A</nachname>
+  <vorname>Max</vorname>
+  <nachname>Muster</nachname>
   <adresse>
-    <land>string</land>
-    <plz>2877</plz>
-    <ort>string</ort>
-    <strasse>string</strasse>
+    <strasse>Maxstrasse 2</strasse>
+    <plz>10551</plz>
+    <ort>Berlin</ort>
+    <land>Deutschland</land>
   </adresse>
-  <nummer>string</nummer>
-  <mail>e@a</mail>
-  <kurse>2617</kurse>
-  <kurse>2074</kurse>
+  <nummer>warum?</nummer>
+  <mail>abc@ab.ab</mail>
+  <kurse>578841</kurse>
+  <kurse>569306</kurse>
 </kunde>
