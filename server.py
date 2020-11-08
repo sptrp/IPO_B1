@@ -16,6 +16,7 @@ import csv
 import lxml.etree as et
 import sys
 import os
+import helper 
 
 # logger
 logging.basicConfig(level=logging.DEBUG)
@@ -149,17 +150,20 @@ def find_elems_from_query(path):
 # server
 async def echo(websocket, path):
   async for message in websocket:
-
-    calltype = message[:3]
+    
+    tree = et.ElementTree(et.fromstring(message))
+    # parse format and calltype from request
+    format = tree.xpath('//format')[0].text
+    calltype = tree.xpath('//calltype')[0].text
 
     if (calltype == 'acs'):
-      format = message[-3:]
       await websocket.send(xml_parser())
       
     elif (calltype == 'sse'):
-      format = message[-3:]
-      path = message[3:-3]
-      print(path)
+      # parse client id from request
+      client_id = tree.xpath('//client')[0].text
+      # build path
+      path = helper.path_constructor('kunde', client_id)    
       await websocket.send(str(find_elems_from_query(path)))
 
 

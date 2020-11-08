@@ -13,6 +13,7 @@ import time
 import os
 import helper 
 from configupdater import ConfigUpdater
+import lxml.etree as et
 
 # client id 
 client_id = os.getpid()
@@ -22,9 +23,6 @@ config = ConfigUpdater()
 config_path = "config.%s.cfg" % os.getpid()
 helper.create_config(config, config_path)
 
-# path for all booked coursed
-def path_constructor(kunde, val):
-  return "//veranstaltung/buchung[{}={}]" .format(kunde, val)
 
 # path for specific attribute
 def path_constructor_numid(attribute, val):
@@ -50,7 +48,7 @@ async def demo():
 
           while choice != '9':
             # Greeting and format
-            #print("Client %s runs" % client_id)  #testet client id
+            print("Client %s runs" % client_id)  #testet client id
 
             # Menu
             print(config['menu']['greet'].value)
@@ -80,19 +78,18 @@ async def demo():
               # Read config file to get actual format value and make query
               config.read(config_path)
               calltype = config['calltype']['show_some_elems'].value
-              path = path_constructor(config['misc']['path_client'].value, client_id)              
-          
-              format = config['misc']['format'].value
-              data = "{}{}{}" .format(calltype, path, format)
-
-              await ws.send(data)
+              # build request
+              request = helper.create_request(config, calltype, client_id)
+              await ws.send(et.tostring(request, encoding='utf8', method='xml'))
               # recv() receives data from the server
               response = await ws.recv()
               print("\n%s\n" % config['misc']['my_courses'].value + response)
               time.sleep(2)
 
             elif choice == "2":
-                print("Do Something 2")
+                request = helper.create_request(config, client_id)
+              
+                print(et.tostring(request, encoding='utf8', method='xml'))
 
             # show data
             elif choice == "1":
@@ -112,8 +109,8 @@ async def demo():
               #show ALL courses
               if subchoice == "1":
                 # Read config file to get query
-                config.read(config_path)
-                calltype = config['calltype']['show_all_courses'].value            
+                #config.read(config_path)
+                #calltype = config['calltype']['show_all_courses'].value            
                 data = "{}{}{}" .format(calltype,'path', format)
                 await ws.send(data)
                 # recv() receives data from the server

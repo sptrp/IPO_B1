@@ -1,4 +1,7 @@
 from configupdater import ConfigUpdater
+# for xml requests (Nikolai's advice)
+from lxml.builder import E
+from lxml import etree
 
 def create_config(config, config_path):
   # create config file
@@ -54,3 +57,18 @@ def config_switcher(config, configfile):
     config.read(configfile)
     config['misc']['format'].value = 'csv'
     config.update_file()
+
+
+def create_request(config, calltype, client_id): 
+  return E.request(
+            E.course_request(
+                E.format(config['misc']['format'].value),
+                E.calltype(str(calltype)),
+                E.client(str(client_id))
+            )
+        )
+
+
+# path for all booked coursed
+def path_constructor(kunde, val):
+  return "//veranstaltung/buchung[{}={}]" .format(kunde, val)
