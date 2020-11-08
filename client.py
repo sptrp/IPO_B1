@@ -102,6 +102,7 @@ async def demo():
                 await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 # recv() receives data from the server
                 response = await ws.recv()
+
                 print("\n%s\n" % config['misc']['my_courses'].value + response)
                 time.sleep(2)
 
@@ -111,11 +112,13 @@ async def demo():
                 config.read(config_path)
                 calltype = config['calltype']['show_some_elems'].value
                 value = input(config['submenu2']['choice_guid'].value)
+
                 # build request 
                 request = helper.create_elem_request(config, "guid", calltype, value, client_id)
                 await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 # recv() receives data from the server
                 response = await ws.recv()
+        
                 print("\n%s\n" % config['misc']['searched'].value + response)
                 time.sleep(0.1)
 
@@ -126,10 +129,11 @@ async def demo():
                 calltype = config['calltype']['show_some_elems'].value
                 value = input(config['submenu2']['choice_nummer'].value)
                 # build request 
-                request = helper.create_elem_request(config, "nummer", calltype, value)
+                request = helper.create_elem_request(config, "nummer", calltype, value, client_id)
                 await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 # recv() receives data from the server
                 response = await ws.recv()
+
                 print("\n%s\n" % config['misc']['searched'].value + response)
                 time.sleep(0.1)
 
@@ -140,10 +144,11 @@ async def demo():
                 calltype = config['calltype']['show_some_elems'].value
                 value = input(config['submenu2']['choice_name'].value)
                 # build request 
-                request = helper.create_elem_request(config, "name", calltype, value)
+                request = helper.create_elem_request(config, "name", calltype, value, client_id)
                 await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 # recv() receives data from the server
                 response = await ws.recv()
+
                 print("\n%s\n" % config['misc']['searched'].value + response)
                 time.sleep(0.1)
 
@@ -154,10 +159,11 @@ async def demo():
                 calltype = config['calltype']['show_some_elems'].value
                 value = input(config['submenu2']['choice_divers'].value)
                 # build request 
-                request = helper.create_elem_request(config, "divers", calltype, value)
+                request = helper.create_elem_request(config, "divers", calltype, value, client_id)
                 await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 # recv() receives data from the server
                 response = await ws.recv()
+
                 print("\n%s\n" % config['misc']['searched'].value + response)
                 time.sleep(0.1)
 
