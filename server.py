@@ -105,12 +105,8 @@ def xml_element_selector(path):
 
   return list
 
-<<<<<<< Updated upstream
-def show_path_bookings(path):
-  root = xml_parser()
-=======
+
 def show_my_bookings(path):
->>>>>>> Stashed changes
   my_dict = {}
   rows = []
   tree = et.parse(xml)
