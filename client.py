@@ -11,56 +11,16 @@ import asyncio
 import websockets
 import time
 import os
+import helper 
 from configupdater import ConfigUpdater
-
 
 # client id 
 client_id = os.getpid()
 
-# temporary config file path
+# create temporary config file
+config = ConfigUpdater()
 config_path = "config.%s.cfg" % os.getpid()
-
-# create config file
-with open(config_path, 'w') as configfile:
-  config = ConfigUpdater()
-  start_cfg = """
-  [misc]
-  format = xml
-  all_courses: All courses:
-  my_courses: My courses:
-  path_client: kunde
-  searched: Found courses:
-
-  [menu]
-  choose_format: Bitte waehlen Sie ein Format in config.cfg. Dafuer muessen Sie die 3. Zeile 'format...' aendern (xml oder csv)
-  format_chosen: Format gewaehlt? j/n : 
-  greet: Bitte waehlen Sie einen Befehl : 
-  data: 1) Daten abrufen
-  book: 2) Kurs buchen
-  my_books: 3) Buchungen anzeigen
-  end: 9) Beenden
-  choice: Wahl eingeben : 
-  bye: Bye bye
-  repeat: Bitte wiederholen Sie die Eingabe.
-
-  [submenu2]
-  title: Bitte waehlen Sie, nach welchen Elementen Sie suchen wollen:
-  alle: 1) Alle Kurse abrufen.
-  guid: 2) Nach GU-ID filtern.
-  nummer: 3) Nach Nummer filtern.
-  name: 4) Nach Stichwort filtern.
-  attribute: 5) Stich innerhalb eines Attributes suchen
-  back: 6) Zurueck.
-  choice: Ihre Wahl: 
-
-  [calltype]
-  show_some_elems: sse
-  show_all_courses: acs
-  show_all_info: asa
-  """
-  config.read_string(start_cfg)
-  config.write(configfile)
-
+helper.create_config(config, config_path)
 
 # path for all booked coursed
 def path_constructor(kunde, val):
@@ -97,6 +57,7 @@ async def demo():
             print(config['menu']['data'].value)
             print(config['menu']['book'].value)
             print(config['menu']['my_books'].value)
+            print(config['menu']['menu_choose_format'].value)
             print(config['menu']['end'].value)
             
             choice = input (config['menu']['choice'].value)
@@ -109,22 +70,15 @@ async def demo():
               os._exit(1)   #Quelle: https://stackoverflow.com/questions/173278/is-there-a-way-to-prevent-a-systemexit-exception-raised-from-sys-exit-from-bei bypasses exceptions
 
             elif choice == "5":
-                print("Go to another menu")
-                second_menu()
+              print("Do Something 4")
 
             elif choice == "4":
-                print("Do Something 4")
+              helper.config_switcher(config, config_path)
 
             # Show my booking
-            elif choice == "3":
-              # Call after format
-              while choice != 'j':
-                print(config['menu']['choose_format'].value)
-                time.sleep(0.2)
-                choice = input (config['menu']['format_chosen'].value)  
-                
+            elif choice == "3":           
               # Read config file to get actual format value and make query
-              config.read("config.cfg")
+              config.read(config_path)
               calltype = config['calltype']['show_some_elems'].value
               path = path_constructor(config['misc']['path_client'].value, client_id)              
           
@@ -142,13 +96,6 @@ async def demo():
 
             # show data
             elif choice == "1":
-              # Call after format
-              while choice != 'j':
-                print(config['menu']['choose_format'].value)
-                time.sleep(0.2)
-                choice = input (config['menu']['format_chosen'].value) 
-                config.read(config_path)
-                format = config['misc']['format'].value  
 
               #Print submenu for data
               print(config['submenu2']['title'].value)
