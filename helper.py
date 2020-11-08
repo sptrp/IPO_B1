@@ -64,24 +64,27 @@ def config_switcher(config, configfile):
     config.update_file()
 
 
-# create requests 
+# create request 
 def create_request(config, calltype, client_id): 
   return E.request(
             E.course_request(
                 E.format(config['misc']['format'].value),
                 E.calltype(str(calltype)),
+                E.element(""),
+                E.value(""),
                 E.client(str(client_id))
             )
         )
 
-# create requests 
+# create request for single element 
 def create_elem_request(config, elem, calltype, value): 
   return E.request(
             E.course_request(
                 E.format(config['misc']['format'].value),
                 E.calltype(str(calltype)),
                 E.element(elem),
-                E.value(value)
+                E.value(value),
+                E.client(str(client_id))
             )
         )        
 
