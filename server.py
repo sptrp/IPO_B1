@@ -163,7 +163,7 @@ async def echo(websocket, path):
       if (calltype == 'acs'):
         await websocket.send(find_all_courses(format))
           
-      elif (calltype == 'sse'):4
+      elif (calltype == 'sse'):
         elem = tree.xpath('//element')[0].text
         value = tree.xpath('//value')[0].text
         # build path
