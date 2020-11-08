@@ -24,14 +24,14 @@ client_id = os.getpid()
 def path_constructor(elem, val):
   return "//veranstaltung/buchung[{}={}]" .format(elem, val)
 
-def path_constructor_guid(val):
-  return "//veranstaltung[guid={}]" .format(val)
+def path_constructor_numid(elem, val):
+  return "//veranstaltung[{}={}]" .format(elem, val)
 
 def path_constructor_nummer(val):
   return "//veranstaltung[nummer={}]" .format(val)
 
-def path_constructor_name(name):
-  return "//veranstaltung[contains(@name, {})]" .format(name)
+def path_constructor_name(elem, name):
+  return "//veranstaltung[contains(@{}, {})]" .format(elem, name)
 
 # async = asynchronous function (coroutine; https://docs.python.org/3/glossary.html#term-coroutine)
 async def demo():
@@ -44,7 +44,7 @@ async def demo():
 
           while choice != '9':
             # Greeting and format
-            print("Client %s runs" % client_id)
+            #print("Client %s runs" % client_id)  #testet client id
 
             # Menu
             print(config['menu']['greet'].value)
@@ -123,7 +123,7 @@ async def demo():
                 await ws.send(data)
                 # recv() receives data from the server
                 response = await ws.recv()
-                print("\n%s\n" % (config['misc']['all_courses'].value + response).encode())
+                print("\n%s\n" % (config['misc']['all_courses'].value + response))
                 time.sleep(0.1)
 
               #sort with guid
@@ -131,23 +131,33 @@ async def demo():
                 # Read config file to get query
                 config.read("config.cfg")
                 calltype = config['calltype']['show_some_books'].value
-                path = path_constructor_guid(input("Bitte GUID angeben: "))      
+                path = path_constructor_numid('guid',input("Bitte GUID angeben: "))      
                 data = "{}{}{}" .format(calltype, path, format)
                 await ws.send(data)
                 # recv() receives data from the server
                 response = await ws.recv()
-                print("\n%s\n" % config['misc']['searched: '].value + response)
+                print("\n%s\n" % config['misc']['searched'].value + response)
                 time.sleep(0.1)
 
               #sort with nummer    
               elif subchoice == "3":
-                  print("SUBCHOISE 3 ")
+                # Read config file to get query
+                config.read("config.cfg")
+                calltype = config['calltype']['show_some_books'].value
+                path = path_constructor_numid('nummer',input("Bitte Nummer angeben: "))      
+                data = "{}{}{}" .format(calltype, path, format)
+                await ws.send(data)
+                # recv() receives data from the server
+                response = await ws.recv()
+                print("\n%s\n" % config['misc']['searched'].value + response)
+                time.sleep(0.1)
+
               #sort with names
               elif subchoice == "4":
                 # Read config file to get query
                 config.read("config.cfg")
                 calltype = config['calltype']['show_some_books'].value
-                path = path_constructor_name(input("Bitte Suchbegriff angeben: "))      
+                path = path_constructor_name('name', input("Bitte Suchbegriff angeben: "))      
                 data = "{}{}{}" .format(calltype, path, format)
                 await ws.send(data)
                 # recv() receives data from the server
@@ -157,9 +167,19 @@ async def demo():
 
               #sort with subtitles    
               elif subchoice == "5":
-                  print("E 5")                      
+                # Read config file to get query
+                config.read("config.cfg")
+                calltype = config['calltype']['show_some_books'].value
+                path = path_constructor_name('untertitel', input("Bitte Suchbegriff angeben: "))      
+                data = "{}{}{}" .format(calltype, path, format)
+                await ws.send(data)
+                # recv() receives data from the server
+                response = await ws.recv()
+                print("\n%s\n" % config['misc']['searched'].value + response)
+                time.sleep(0.1)                  
               else:
-                  print("Looping!")
+                  print("Hauptmenue....")
+                  time.sleep(1)
                   choice = 0
 
             else:
