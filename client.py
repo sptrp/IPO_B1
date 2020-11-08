@@ -129,7 +129,7 @@ async def demo():
                 # Read config file to get query
                 config.read("config.cfg")
                 calltype = config['calltype']['show_some_books'].value
-                path = path_constructor_numid('guid',input("Bitte GUID angeben: "))      
+                path = path_constructor_numid('guid', input("Bitte GUID angeben: "))      
                 data = "{}{}{}" .format(calltype, path, format)
                 await ws.send(data)
                 # recv() receives data from the server

@@ -106,7 +106,7 @@ def xml_element_selector(path):
   return list
 
 
-def show_my_bookings(path):
+def show_path_bookings(path):
   my_dict = {}
   rows = []
   tree = et.parse(xml)
