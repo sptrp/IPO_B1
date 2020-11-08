@@ -19,16 +19,31 @@ config = ConfigUpdater()
 config.read("config.cfg")
 
 # client id 
-client_id = os.getpid()
+client_id = '12345' #os.getpid()
 
-def path_constructor(elem, val):
-  return "//veranstaltung/buchung[{}={}]" .format(elem, val)
+# path for all booked coursed
+def path_constructor(kunde, val):
+  return "//veranstaltung/buchung[{}={}]" .format(kunde, val)
 
+<<<<<<< HEAD
 def path_constructor_numid(elem, val):
   return "//veranstaltung[{}='{}']" .format(elem, val)
 
 def path_constructor_name(elem, name):
   return "//veranstaltung[text()='{}']" .format(name)
+=======
+# path for specific attribute
+def path_constructor_numid(attribute, val):
+  return "//veranstaltung[{}='{}']" .format(attribute, val)
+
+# path for string in text
+def path_constructor_name(string):
+  return "//veranstaltung/*[contains(text(), '{}')]" .format(string)
+
+# path for string in text in specific attribute
+def path_constructor_onlyname(attribute, string):
+  return "//veranstaltung/{}[contains(text(), '{}')]" .format(attribute, string)  
+>>>>>>> stefematik
 
 # async = asynchronous function (coroutine; https://docs.python.org/3/glossary.html#term-coroutine)
 async def demo():
@@ -106,7 +121,7 @@ async def demo():
               print(config['submenu2']['guid'].value)
               print(config['submenu2']['nummer'].value)
               print(config['submenu2']['name'].value)
-              print(config['submenu2']['untertitel'].value)
+              print(config['submenu2']['attribute'].value)
               print(config['submenu2']['back'].value)
               time.sleep(0.5)
               subchoice = input(config['submenu2']['choice'].value)
@@ -144,6 +159,7 @@ async def demo():
                 calltype = config['calltype']['show_some_elems'].value
                 path = path_constructor_numid('nummer', input("Bitte Nummer angeben: "))      
                 data = "{}{}{}" .format(calltype, path, format)
+                print("PATH: " + path)
                 await ws.send(data)
                 # recv() receives data from the server
                 response = await ws.recv()
@@ -156,6 +172,7 @@ async def demo():
                 config.read("config.cfg")
                 calltype = config['calltype']['show_some_elems'].value
                 path = path_constructor_name('name', input("Bitte Suchbegriff angeben: "))      
+
                 data = "{}{}{}" .format(calltype, path, format)
                 await ws.send(data)
                 # recv() receives data from the server
@@ -163,18 +180,20 @@ async def demo():
                 print("\n%s\n" % config['misc']['searched'].value + response)
                 time.sleep(0.1)
 
-              #sort with subtitles    
+              #sort with names
               elif subchoice == "5":
                 # Read config file to get query
                 config.read("config.cfg")
                 calltype = config['calltype']['show_some_elems'].value
                 path = path_constructor_name('untertitel', input("Bitte Suchbegriff angeben: "))      
+
                 data = "{}{}{}" .format(calltype, path, format)
                 await ws.send(data)
                 # recv() receives data from the server
                 response = await ws.recv()
                 print("\n%s\n" % config['misc']['searched'].value + response)
-                time.sleep(0.1)                  
+                time.sleep(0.1)                
+
               else:
                   print("Hauptmenu....")
                   time.sleep(1)
