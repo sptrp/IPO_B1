@@ -27,7 +27,7 @@ request_schema = os.path.join(sys.path[0], 'request.xsd')
 
 
 # parse kurse_snippet and return csv
-def course_parser(format):
+def find_all_courses(format):
   tree = et.parse(xml)
   root = tree.getroot()
 
@@ -84,51 +84,55 @@ def course_parser(format):
     return output_string 
 
 
-def find_elems_from_query_xml(path):
-  tree = et.parse(xml)
-  root = tree.getroot()
-  elems = root.xpath(path)
+def find_elems_from_query(format, path):
+  # check format
+  if (format == 'xml'):
+    tree = et.parse(xml)
+    root = tree.getroot()
+    elems = root.xpath(path)
+    # https://stackoverflow.com/questions/23727696/list-can-not-be-serialized-error-when-using-xpath-with-lxml-etree
+    joined_string = "".join([et.tostring(elem, encoding="unicode", pretty_print=True) for elem in elems])
 
-  return et.tostring(elems, pretty_print=True)
+    return joined_string
 
-def find_elems_from_query_csv(path):
-  my_dict = {}
-  rows = []
-  tree = et.parse(xml)
-  root = tree.getroot()
-  cols = [' Name', ' Untertitel', ' Minimale Teilnehmerzahl', ' Maximale Teilnehmerzahl', ' Beginn Datum']
-  # give the temp data distinct name
-  file_name = 'my_courses.%s.csv' % os.getpid()
+  else:   
+    my_dict = {}
+    rows = []
+    tree = et.parse(xml)
+    root = tree.getroot()
+    cols = [' Name', ' Untertitel', ' Minimale Teilnehmerzahl', ' Maximale Teilnehmerzahl', ' Beginn Datum']
+    # give the temp data distinct name
+    file_name = 'my_courses.%s.csv' % os.getpid()
 
-  # parse all found elements and make dict
-  for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
-    for dept in targ.xpath('ancestor-or-self::veranstaltung'):
-      my_dict[dept[0].text] = { "Name" : dept[2].text, "Untertitel" : dept[3].text,
-                                "Minimale Teilnehmerzahl" : dept[5].text,
-                                "Maximale Teilnehmerzahl" : dept[6].text,
-                                "Beginn Datum" : dept[8].text
-                              }                         
-  try:
-    with open(file_name, 'w') as file:
-      for elem in my_dict:
-        # parse elements and write to csv
-        rows.append({ " Name": my_dict[elem]['Name'], " Untertitel": my_dict[elem]['Untertitel'],
-                      " Minimale Teilnehmerzahl": my_dict[elem]['Minimale Teilnehmerzahl'], 
-                      " Maximale Teilnehmerzahl": my_dict[elem]['Maximale Teilnehmerzahl'], 
-                      " Beginn Datum": my_dict[elem]['Beginn Datum'] 
-                    })
-      dataframe = pd.DataFrame(rows, columns = cols) 
-      dataframe.to_csv(file_name)
-  except IOError:
-      print("I/O error")
-  finally:
-    with open(file_name, encoding="utf8") as f:
-      # place csv data in output string
-      output_string = f.read() + '\n'
-    # remove temp file
-    os.remove(file_name)
+    # parse all found elements and make dict
+    for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
+      for dept in targ.xpath('ancestor-or-self::veranstaltung'):
+        my_dict[dept[0].text] = { "Name" : dept[2].text, "Untertitel" : dept[3].text,
+                                  "Minimale Teilnehmerzahl" : dept[5].text,
+                                  "Maximale Teilnehmerzahl" : dept[6].text,
+                                  "Beginn Datum" : dept[8].text
+                                }                         
+    try:
+      with open(file_name, 'w') as file:
+        for elem in my_dict:
+          # parse elements and write to csv
+          rows.append({ " Name": my_dict[elem]['Name'], " Untertitel": my_dict[elem]['Untertitel'],
+                        " Minimale Teilnehmerzahl": my_dict[elem]['Minimale Teilnehmerzahl'], 
+                        " Maximale Teilnehmerzahl": my_dict[elem]['Maximale Teilnehmerzahl'], 
+                        " Beginn Datum": my_dict[elem]['Beginn Datum'] 
+                      })
+        dataframe = pd.DataFrame(rows, columns = cols) 
+        dataframe.to_csv(file_name)
+    except IOError:
+        print("I/O error")
+    finally:
+      with open(file_name, encoding="utf8") as f:
+        # place csv data in output string
+        output_string = f.read() + '\n'
+      # remove temp file
+      os.remove(file_name)
 
-  return output_string
+    return output_string
 
 # validator for incoming xml  
 def xml_validator(input, schema):
@@ -157,9 +161,9 @@ async def echo(websocket, path):
       calltype = tree.xpath('//calltype')[0].text
 
       if (calltype == 'acs'):
-        await websocket.send(course_parser(format))
+        await websocket.send(find_all_courses(format))
           
-      elif (calltype == 'sse'):
+      elif (calltype == 'sse'):4
         elem = tree.xpath('//element')[0].text
         value = tree.xpath('//value')[0].text
         # build path
@@ -168,7 +172,7 @@ async def echo(websocket, path):
         else: 
           path = helper.path_constructor_elem(elem, value) 
 
-        await websocket.send(str(find_elems_from_query_xml(path)))
+        await websocket.send(str(find_elems_from_query(format, path)))
 
       elif (calltype == 'mcs'):
         # parse client id from request
