@@ -27,9 +27,6 @@ def path_constructor(elem, val):
 def path_constructor_numid(elem, val):
   return "//veranstaltung[{}={}]" .format(elem, val)
 
-def path_constructor_nummer(val):
-  return "//veranstaltung[nummer={}]" .format(val)
-
 def path_constructor_name(elem, name):
   return "//veranstaltung[contains(@{}, {})]" .format(elem, name)
 
@@ -178,7 +175,7 @@ async def demo():
                 print("\n%s\n" % config['misc']['searched'].value + response)
                 time.sleep(0.1)                  
               else:
-                  print("Hauptmenue....")
+                  print("Hauptmenu....")
                   time.sleep(1)
                   choice = 0
 
