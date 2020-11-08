@@ -58,7 +58,7 @@ async def demo():
             # Exit program
             if choice == '9':
               print(config['menu']['bye'].value)
-              time.sleep(2)
+              time.sleep(0.1)
               os._exit(1)   #Quelle: https://stackoverflow.com/questions/173278/is-there-a-way-to-prevent-a-systemexit-exception-raised-from-sys-exit-from-bei bypasses exceptions
 
             elif choice == "5":
@@ -73,16 +73,14 @@ async def demo():
               # Call after format
               while choice != 'j':
                 print(config['menu']['choose_format'].value)
-                time.sleep(2)
+                time.sleep(0.2)
                 choice = input (config['menu']['format_chosen'].value)  
                 
               # Read config file to get actual format value and make query
               config.read("config.cfg")
-              calltype = config['calltype']['show_my_books'].value
+              calltype = config['calltype']['show_some_books'].value
               path = path_constructor(config['misc']['path_client'].value, client_id)              
               format = config['misc']['format'].value
-              print(path)
-              print (path_constructor_name('Englisch'))
               data = "{}{}{}" .format(calltype, path, format)
 
               await ws.send(data)
@@ -99,7 +97,7 @@ async def demo():
               # Call after format
               while choice != 'j':
                 print(config['menu']['choose_format'].value)
-                time.sleep(1)
+                time.sleep(0.2)
                 choice = input (config['menu']['format_chosen'].value) 
                 config.read("config.cfg")
                 format = config['misc']['format'].value  
@@ -112,7 +110,7 @@ async def demo():
               print(config['submenu2']['name'].value)
               print(config['submenu2']['untertitel'].value)
               print(config['submenu2']['back'].value)
-              time.sleep(1)
+              time.sleep(0.5)
               subchoice = input(config['submenu2']['choice'].value)
               print(subchoice)
 
@@ -121,33 +119,42 @@ async def demo():
                 # Read config file to get query
                 config.read("config.cfg")
                 calltype = config['calltype']['show_all_courses'].value            
-                data = "{}{}" .format(calltype, format)
+                data = "{}{}{}" .format(calltype,'path', format)
                 await ws.send(data)
                 # recv() receives data from the server
                 response = await ws.recv()
-                print("\n%s\n" % config['misc']['all_courses'].value + response)
-                time.sleep(2)
+                print("\n%s\n" % (config['misc']['all_courses'].value + response).encode())
+                time.sleep(0.1)
 
               #sort with guid
               elif subchoice == "2":
                 # Read config file to get query
                 config.read("config.cfg")
-                calltype = config['calltype']['filterguid'].value
+                calltype = config['calltype']['show_some_books'].value
                 path = path_constructor_guid(input("Bitte GUID angeben: "))      
-                print(path)
                 data = "{}{}{}" .format(calltype, path, format)
-                print(data)
                 await ws.send(data)
                 # recv() receives data from the server
                 response = await ws.recv()
-                print("\n%s\n" % config['misc']['all_courses'].value + response)
-                time.sleep(2)
+                print("\n%s\n" % config['misc']['searched: '].value + response)
+                time.sleep(0.1)
+
               #sort with nummer    
               elif subchoice == "3":
                   print("SUBCHOISE 3 ")
               #sort with names
               elif subchoice == "4":
-                  print("E 4")
+                # Read config file to get query
+                config.read("config.cfg")
+                calltype = config['calltype']['show_some_books'].value
+                path = path_constructor_name(input("Bitte Suchbegriff angeben: "))      
+                data = "{}{}{}" .format(calltype, path, format)
+                await ws.send(data)
+                # recv() receives data from the server
+                response = await ws.recv()
+                print("\n%s\n" % config['misc']['searched'].value + response)
+                time.sleep(0.1)
+
               #sort with subtitles    
               elif subchoice == "5":
                   print("E 5")                      
