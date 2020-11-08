@@ -25,10 +25,10 @@ def path_constructor(elem, val):
   return "//veranstaltung/buchung[{}={}]" .format(elem, val)
 
 def path_constructor_numid(elem, val):
-  return "//veranstaltung[{}={}]" .format(elem, val)
+  return "//veranstaltung[{}='{}']" .format(elem, val)
 
 def path_constructor_name(elem, name):
-  return "//veranstaltung[contains(@{}, {})]" .format(elem, name)
+  return "//veranstaltung[text()='{}']" .format(name)
 
 # async = asynchronous function (coroutine; https://docs.python.org/3/glossary.html#term-coroutine)
 async def demo():
@@ -142,7 +142,7 @@ async def demo():
                 # Read config file to get query
                 config.read("config.cfg")
                 calltype = config['calltype']['show_some_books'].value
-                path = path_constructor_numid('nummer',input("Bitte Nummer angeben: "))      
+                path = path_constructor_numid('nummer', input("Bitte Nummer angeben: "))      
                 data = "{}{}{}" .format(calltype, path, format)
                 await ws.send(data)
                 # recv() receives data from the server

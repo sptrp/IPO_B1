@@ -106,7 +106,7 @@ def xml_element_selector(path):
   return list
 
 
-def show_path_bookings(path):
+def find_elems_from_query(path):
   my_dict = {}
   rows = []
   tree = et.parse(xml)
@@ -156,17 +156,11 @@ async def echo(websocket, path):
       format = message[-3:]
       await websocket.send(xml_parser())
       
-    elif (calltype == 'abk'):
+    elif (calltype == 'abk' or calltype == 'fgu'):
       format = message[-3:]
       path = message[3:-3]
       print(path)
-      await websocket.send(str(show_path_bookings(path)))
-    
-    elif (calltype == 'fgu'):
-      format = message[-3:]
-      path = message[3:-3]
-      print(path)
-      await websocket.send(str(show_path_bookings(path)))
+      await websocket.send(str(find_elems_from_query(path)))
 
 
 asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765, max_size = None) )
