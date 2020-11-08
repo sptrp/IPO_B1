@@ -36,9 +36,11 @@ name: 4) Nach Stichwort filtern.
 attribute: 5) Stich innerhalb eines Attributes suchen
 back: 6) Zurueck.
 choice: Ihre Wahl: 
+choice_guid: Bitte GUID angeben : 
 
 [calltype]
 show_some_elems: sse
+show_my_courses: mcs
 show_all_courses: acs
 show_all_info: asa
 """
@@ -59,6 +61,7 @@ def config_switcher(config, configfile):
     config.update_file()
 
 
+# create requests 
 def create_request(config, calltype, client_id): 
   return E.request(
             E.course_request(
@@ -68,7 +71,30 @@ def create_request(config, calltype, client_id):
             )
         )
 
+# create requests 
+def create_elem_request(config, elem, calltype, value): 
+  return E.request(
+            E.course_request(
+                E.format(config['misc']['format'].value),
+                E.calltype(str(calltype)),
+                E.element(elem),
+                E.value(value)
+            )
+        )        
+
 
 # path for all booked coursed
 def path_constructor(kunde, val):
   return "//veranstaltung/buchung[{}={}]" .format(kunde, val)
+
+# path for specific attribute
+def path_constructor_numid(attribute, val):
+  return "//veranstaltung[{}='{}']" .format(attribute, val)
+
+# path for string in text
+def path_constructor_name(string):
+  return "//veranstaltung/*[contains(text(), '{}')]" .format(string)
+
+# path for string in text in specific attribute
+def path_constructor_onlyname(attribute, string):
+  return "//veranstaltung/{}[contains(text(), '{}')]" .format(attribute, string)  

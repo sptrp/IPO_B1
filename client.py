@@ -24,19 +24,6 @@ config_path = "config.%s.cfg" % os.getpid()
 helper.create_config(config, config_path)
 
 
-# path for specific attribute
-def path_constructor_numid(attribute, val):
-  return "//veranstaltung[{}='{}']" .format(attribute, val)
-
-# path for string in text
-def path_constructor_name(string):
-  return "//veranstaltung/*[contains(text(), '{}')]" .format(string)
-
-# path for string in text in specific attribute
-def path_constructor_onlyname(attribute, string):
-  return "//veranstaltung/{}[contains(text(), '{}')]" .format(attribute, string)  
-
-
 # async = asynchronous function (coroutine; https://docs.python.org/3/glossary.html#term-coroutine)
 async def demo():
       # connect() creates a client connection and receives a WebSocketClientProtocol object to send/receive WS messages
@@ -77,7 +64,7 @@ async def demo():
             elif choice == "3":           
               # Read config file to get actual format value and make query
               config.read(config_path)
-              calltype = config['calltype']['show_some_elems'].value
+              calltype = config['calltype']['show_my_courses'].value
               # build request
               request = helper.create_request(config, calltype, client_id)
               await ws.send(et.tostring(request, encoding='utf8', method='xml'))
@@ -108,24 +95,26 @@ async def demo():
 
               #show ALL courses
               if subchoice == "1":
-                # Read config file to get query
-                #config.read(config_path)
-                #calltype = config['calltype']['show_all_courses'].value            
-                data = "{}{}{}" .format(calltype,'path', format)
-                await ws.send(data)
+                # Read config file to get actual format value and make query
+                config.read(config_path)
+                calltype = config['calltype']['show_all_courses'].value
+                # build request
+                request = helper.create_request(config, calltype, client_id)
+                await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 # recv() receives data from the server
                 response = await ws.recv()
-                print("\n%s\n" % (config['misc']['all_courses'].value + response))
-                time.sleep(0.1)
+                print("\n%s\n" % config['misc']['my_courses'].value + response)
+                time.sleep(2)
 
               #sort with guid
               elif subchoice == "2":
                 # Read config file to get query
                 config.read(config_path)
                 calltype = config['calltype']['show_some_elems'].value
-                path = path_constructor_numid('guid', input("Bitte GUID angeben: "))      
-                data = "{}{}{}" .format(calltype, path, format)
-                await ws.send(data)
+                value = input(config['submenu2']['choice_guid'].value)
+                # build request 
+                request = helper.create_elem_request(config, "guid", calltype, value)
+                await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 # recv() receives data from the server
                 response = await ws.recv()
                 print("\n%s\n" % config['misc']['searched'].value + response)
