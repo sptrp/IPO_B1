@@ -90,7 +90,7 @@ def create_elem_request(config, elem, calltype, value, client_id):
 
 
 # path for all booked coursed
-def path_constructor(kunde, val):
+def path_constructor_book(kunde, val):
   return "//veranstaltung/buchung[{}={}]" .format(kunde, val)
 
 # path for specific attribute
@@ -99,7 +99,7 @@ def path_constructor_elem(attribute, val):
 
 # path for string in text
 def path_constructor_divers(val):
-  return "//veranstaltung/*[contains(text(), '{}')]" .format(val)
+  return "//*[contains(text(), '{}')]" .format(val)
 
 # path for string in text in specific attribute
 def path_constructor_onlyname(attribute, val):

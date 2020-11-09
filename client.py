@@ -20,7 +20,7 @@ client_id = os.getpid()
 
 # create temporary config file
 config = ConfigUpdater()
-config_path = "config.%s.cfg" % os.getpid()
+config_path = "config%s.cfg" % os.getpid()
 helper.create_config(config, config_path)
 
 
@@ -196,6 +196,8 @@ async def demo():
 # async only runs in an event_loop (https://cheat.readthedocs.io/en/latest/python/asyncio.html#event-loops)
 # run_until_complete() gets demo coroutine as input to execute it
 asyncio.get_event_loop().run_until_complete( demo() )
+# run_forever: runs the event loop forever; end loop with 9) Beenden or Ctrl-C
+asyncio.get_event_loop().run_forever()
 
 
 

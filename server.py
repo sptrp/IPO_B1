@@ -21,7 +21,8 @@ import helper
 # logger
 logging.basicConfig(level=logging.DEBUG)
 
-xml = os.path.join(sys.path[0], 'kurse.xml')    #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
+xml = os.path.join(sys.path[0], 'kurse.xml')
+xml_snip = os.path.join(sys.path[0], 'kurse_snippet.xml')     #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
 request_schema = os.path.join(sys.path[0], 'request.xsd')  
 
@@ -86,25 +87,24 @@ def find_all_courses(format):
 
 
 def find_elems_from_query(format, path, calltype):
+  joined_string = ""
   # check format
   if (format == 'xml'):
     tree = et.parse(xml)
     root = tree.getroot()
     elems = root.xpath(path)
-    joined_string = ""
 
-    # get ancestors if buchung query
-    if (calltype == 'mcs'):
-      for targ in elems:
+    if (calltype == 'mcs' or calltype == 'div'):
+      for targ in elems: 
         for dept in targ.xpath('ancestor-or-self::veranstaltung'):
-          joined_string = "".join([et.tostring(dept, encoding="unicode", pretty_print=True)])
-
+          joined_string = joined_string + et.tostring(dept, encoding="unicode", pretty_print=True)
+        
     else:
-      # https://stackoverflow.com/questions/23727696/list-can-not-be-serialized-error-when-using-xpath-with-lxml-etree
-      joined_string = "".join([et.tostring(elem, encoding="unicode", pretty_print=True) for elem in elems])
+      # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
+      joined_string = joined_string.join([et.tostring(elem, encoding="unicode", pretty_print=True) for elem in elems])
 
     return joined_string
-
+    
   else:   
     my_dict = {}
     rows = []
@@ -112,7 +112,7 @@ def find_elems_from_query(format, path, calltype):
     root = tree.getroot()
     cols = [' Name', ' Untertitel', ' Minimale Teilnehmerzahl', ' Maximale Teilnehmerzahl', ' Beginn Datum']
     # give the temp data distinct name
-    file_name = 'my_courses.%s.csv' % os.getpid()
+    file_name = 'my_courses%s.csv' % os.getpid()
 
     # parse all found elements and make dict
     for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
@@ -121,7 +121,7 @@ def find_elems_from_query(format, path, calltype):
                                   "Minimale Teilnehmerzahl" : dept[5].text,
                                   "Maximale Teilnehmerzahl" : dept[6].text,
                                   "Beginn Datum" : dept[8].text
-                                }                         
+                                }                                                                   
     try:
       with open(file_name, 'w') as file:
         for elem in my_dict:
@@ -146,24 +146,26 @@ def find_elems_from_query(format, path, calltype):
 
 # validator for incoming xml  
 def xml_validator(input, schema):
-  # create parser from xsd schema
-  with open(schema, 'rb') as f:
-    schema_root = et.XML(f.read())
-    val_schema = et.XMLSchema(schema_root)
-    parser = et.XMLParser(schema=val_schema)
+  with open(input, 'rb') as x:
+    # create parser from xsd schema
+    with open(schema, 'rb') as s:
+      xml_root = et.tostring(et.XML(x.read()), encoding='utf8', method='xml')
+      schema_root = et.XML(s.read())
+      val_schema = et.XMLSchema(schema_root)
+      parser = et.XMLParser(schema=val_schema)
 
-  try:
-    et.fromstring(input, parser) 
-    return True # return true if file is valid
-  except et.XMLSyntaxError: 
-    print("Request Fehler: Falscher Request") # return exception and error message if not
+    try:
+      et.fromstring(xml_root, parser) 
+      return True # return true if file is valid
+    except et.XMLSyntaxError: 
+      print("Request Fehler: Falscher Request") # return exception and error message if not
 
 # server
 async def echo(websocket, path):
   async for message in websocket:
     
     # validate request
-    if xml_validator(message, request_schema):
+    if xml_validator(xml_snip, schema):
 
       tree = et.ElementTree(et.fromstring(message))
       # parse format and calltype from request
@@ -184,24 +186,23 @@ async def echo(websocket, path):
         value = tree.xpath('//value')[0].text
         # build path
         if (elem == 'divers'):
+          calltype = 'div'
           path = helper.path_constructor_divers(value)
         else: 
           path = helper.path_constructor_elem(elem, value) 
 
-        await websocket.send(str(find_elems_from_query(format, path, calltype)))
+        await websocket.send(find_elems_from_query(format, path, calltype))
 
       elif (calltype == 'mcs'):
         # parse client id from request
         client_id = tree.xpath('//client')[0].text
         # build path
-        path = helper.path_constructor('kunde', client_id)
-            
-        await websocket.send(str(find_elems_from_query(format, path, calltype)))
+        path = helper.path_constructor_book('kunde', client_id)
+        await websocket.send(find_elems_from_query(format, path, calltype) )
 
     else:
         await websocket.send('Falscher Request')
 
 asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765, max_size = None) )
 print("Running service at https//:localhost:8765")
-# run_forever: runs the event loop forever; end loop with stop() method or Ctrl-C
 asyncio.get_event_loop().run_forever()
