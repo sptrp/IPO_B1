@@ -44,6 +44,15 @@ choice_nummer: Bitte Nummer angeben :
 choice_name: Bitte Name angeben :
 choice_divers: Bitte Value angeben :  
 
+[submenu3]
+title: Bitte waehlen Sie von folgenden Funktionen:
+daten: 1) Eigene Kundendaten eingeben
+guid: 2) Einen Kurs mittel GUID buchen
+back: 3) Zurueck.
+choice: Ihre Wahl: 
+choice_daten: Bitte jetzt ihre Daten eingeben : 
+choice_guid: Bitte GUID eingeben: 
+
 [calltype]
 show_some_elems: sse
 show_my_courses: mcs
@@ -102,40 +111,53 @@ def xml_validator(input, schema):
     print(result)
     return result
 
+# validator for incoming xml  
+def xml_validator_12313(input, schema):
+  # create parser from xsd schema
+  with open(schema, 'rb') as f:
+    schema_root = etree.XML(f.read())
+    val_schema = etree.XMLSchema(schema_root)
+    parser = etree.XMLParser(schema=val_schema)
+
+  try:
+    etree.fromstring(str(input), parser) 
+    return True # return true if file is valid
+  except etree.XMLSyntaxError: 
+    print("Request Fehler: Falscher Request") # return exception and error message if not
+
 #create xml kunden file
 def create_kundenxml(client_id,vorname,nachname,strasse,plz,ort,land,nummer,mail):
   xml_kunde = os.path.join(sys.path[0], 'kunden.xml') 
-  tree = ET.parse(xml_kunde)
+  tree = etree.parse(xml_kunde)
   root = tree.getroot()
   
-  new = ET.Element('kunde')
-  newsub1 = ET.SubElement(new,'id')
-  newsub1.text = 'Kundennummer'
-  newsub2 = ET.SubElement(new,'vorname')
-  newsub2.text = 'vorn'
-  newsub3 = ET.SubElement(new,'nachname')
-  newsub3.text = 'nn'
-  newsub4 = ET.SubElement(new,'adresse')
-  newsub4.text = ''
-  newsub_ad = ET.SubElement(newsub4, 'strasse')
-  newsub_ad.text = 'Asdasstr. 34'
-  newsub_ad = ET.SubElement(newsub4, 'plz')
-  newsub_ad.text = '12345'
-  newsub_ad = ET.SubElement(newsub4, 'ort')
-  newsub_ad.text = 'Asdasstr. 34'
-  newsub_ad = ET.SubElement(newsub4, 'land')
-  newsub_ad.text = 'Asdasstr. 34'
-  newsub5 = ET.SubElement(new,'nummer')
-  newsub5.text = '123'
-  newsub6 = ET.SubElement(new,'mail')
-  newsub6.text = 'as@da.de'
-  newsub7 = ET.SubElement(new,'kurse')
+  new = E.kunde(
+      E.id(client_id),
+      E.vorname(vorname),
+      E.nachname(nachname),
+      E.adresse (
+        E.strasse(strasse),
+        E.plz(plz),
+        E.ort(ort),
+        E.land(land)
+      ),
+      E.nummer(nummer),
+      E.mail(mail)
+    )
 
-  root.append(new)
-  tree.write(os.path.join(sys.path[0], 'kunden.xml'))
+  root.insert(1, new)
+  tree.write(os.path.join(sys.path[0], 'kunden.xml'), encoding="utf-8", xml_declaration=True)
 
-#client_id = os.getpid()
-#create_kundenxml(client_id,"HEROLD","HUNTER","HRASTR. 4", "12311", "BERLIN", "GER", "12314142","ab@ce.df")
+#add kunde to course with guid
+def add_kunde_to_course(guid, client_id):
+  xml_kunde = os.path.join(sys.path[0], 'kurse_snippet.xml') 
+  tree = ET.parse(xml_kunde)
+  root = tree.getroot()
+  find = root.find("./veranstaltung[guid='{}']/buchung" .format(guid))
+  addclient = ET.SubElement(find, 'kunde')
+  addclient.text = client_id
+  tree.write(os.path.join(sys.path[0], 'kurse_snippet.xml'), encoding="utf-8", xml_declaration=True)
+
 
 # path for all booked coursed
 def path_constructor_book(kunde, val):

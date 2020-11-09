@@ -32,7 +32,7 @@ async def demo():
           # navigation menu
           choice = '0'
           subchoice = '0'
-
+          subchoice2 = '0'
           while choice != '9':
             # Greeting and format
             print("Client %s runs" % client_id)  #testet client id
@@ -74,14 +74,39 @@ async def demo():
               print("\n%s\n" % config['misc']['my_courses'].value + response)
               time.sleep(2)
 
+            #Booking courses
             elif choice == "2":
-              # Read config file to get actual format value and make query
-              config.read(config_path)
-              calltype = config['calltype']['show_my_courses'].value
-              
-              request = helper.create_request(config, calltype, client_id)
-            
-              print(et.tostring(request, encoding='utf8', method='xml'))
+              #print submenu3
+              print(config['submenu3']['title'].value)
+              print(config['submenu3']['daten'].value)
+              print(config['submenu3']['guid'].value)
+              print(config['submenu3']['back'].value)
+              subchoice2 = input(config['submenu3']['choice'].value)
+
+              if subchoice2 == '1':
+                print(config['submenu3']['choice_daten'].value)
+                vorname = input("Ihr Vorname: ")
+                nachname = input("Ihr Nachname: ")
+                strasse = input("Ihre Strasse: ")
+                plz = input("Ihre Postleitzahl: ")
+                ort = input("Ihr Ort: ")
+                land = input("Ihr Land: ")
+                nummer = input("Ihre Telefonnummer: ")
+                mail = input("Ihre E-Mail-Adresse: ")
+                helper.create_kundenxml(str(client_id),vorname,nachname,strasse,plz,ort,land,nummer,mail)
+                time.sleep(1)
+                print("Kundendaten hinzugefuegt. Zurueck zum Hauptmenu..")
+                choice = '0'
+
+              elif subchoice2 == '2':
+                guid = input("Bitte die GUID des Kurses eingeben: ")
+                helper.add_kunde_to_course(guid,str(client_id))
+
+              elif subchoice2 == '3':
+                print("sdaad")
+                
+              else:
+                choice = '0'
 
             # show data
             elif choice == "1":
