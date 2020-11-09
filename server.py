@@ -186,6 +186,7 @@ async def echo(websocket, path):
         # build path
         if (elem == 'divers'):
           path = helper.path_constructor_divers(value)
+          print (path)
         else: 
           path = helper.path_constructor_elem(elem, value) 
 

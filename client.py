@@ -75,9 +75,13 @@ async def demo():
               time.sleep(2)
 
             elif choice == "2":
-                request = helper.create_request(config, client_id)
+              # Read config file to get actual format value and make query
+              config.read(config_path)
+              calltype = config['calltype']['show_my_courses'].value
               
-                print(et.tostring(request, encoding='utf8', method='xml'))
+              request = helper.create_request(config, calltype, client_id)
+            
+              print(et.tostring(request, encoding='utf8', method='xml'))
 
             # show data
             elif choice == "1":
