@@ -54,7 +54,6 @@ def find_all_courses(format):
     chunk.append(output_string[10913760 : 11913760])
     chunk.append(output_string[11913760 : -1])
 
-    #print(twelth_chunk)
     return chunk
 
   else: 
@@ -189,7 +188,7 @@ async def echo(websocket, path):
         else: 
           path = helper.path_constructor_elem(elem, value) 
 
-        await websocket.send(str(find_elems_from_query(format, path)))
+        await websocket.send(str(find_elems_from_query(format, path, calltype)))
 
       elif (calltype == 'mcs'):
         # parse client id from request
