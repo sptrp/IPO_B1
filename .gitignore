@@ -2,5 +2,7 @@ kurse_snippet.xml
 shiporder.xml
 shiporder.xsd
 test123.py
+test.py
+__pycache_
 .DS_Store
 __pycache__

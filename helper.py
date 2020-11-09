@@ -158,6 +158,17 @@ def add_kunde_to_course(guid, client_id):
   addclient.text = client_id
   tree.write(os.path.join(sys.path[0], 'kurse_snippet.xml'), encoding="utf-8", xml_declaration=True)
 
+# 'Guid', 'Nummer', 'Name', 'Untertitel'
+def xml_trimmer(tree):
+  filters = ['dvv_kategorie', 'minimale_teilnehmerzahl', 'maximale_teilnehmerzahl', 'anzahl_termine',
+            'beginn_datum', 'ende_datum', 'zielgruppe', 'schlagwort', 'text', 'veranstaltungsort', 'preis',
+            'webadresse']
+  for fltr in filters:
+
+    for elem in tree.xpath('//veranstaltung/%s' % fltr):
+        elem.getparent().remove(elem)
+
+  return tree
 
 # path for all booked coursed
 def path_constructor_book(kunde, val):
