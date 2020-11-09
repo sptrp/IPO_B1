@@ -10,6 +10,7 @@
               <xs:element type="xs:string" name="element"/>
               <xs:element type="xs:string" name="value"/>
               <xs:element type="xs:int" name="client"/>
+              <xs:element type="xs:string" name="guid"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>

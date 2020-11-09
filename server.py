@@ -21,7 +21,7 @@ import helper
 # logger
 #logging.basicConfig(level=logging.DEBUG)
 
-xml = os.path.join(sys.path[0], 'kurse.xml')
+xml = os.path.join(sys.path[0], 'kurse_snippet.xml')
 xml_snip = os.path.join(sys.path[0], 'kurse_snippet.xml')     #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
 request_schema = os.path.join(sys.path[0], 'request.xsd')  
@@ -41,11 +41,7 @@ def find_all_courses(format):
     chunk.append(output_string[0 : 475860])
     chunk.append(output_string[475860 : 961720])
     chunk.append(output_string[961720 : -1])
-
-<<<<<<< HEAD
-    #print
-=======
->>>>>>> master
+  
     return chunk
 
   else: 
@@ -88,7 +84,7 @@ def find_elems_from_query(format, path, calltype):
     if (calltype == 'mcs' or calltype == 'div'):
       for targ in elems: 
         for dept in targ.xpath('ancestor-or-self::veranstaltung'):
-          joined_string = joined_string + et.tostring(dept, encoding="utf8", pretty_print=True)
+          joined_string = joined_string + et.tostring(dept, encoding="unicode", pretty_print=True)
         
     else:
       # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
@@ -191,6 +187,18 @@ async def echo(websocket, path):
         # build path
         path = helper.path_constructor_book('kunde', client_id)
         await websocket.send(find_elems_from_query(format, path, calltype) )
+
+      elif (calltype == 'bwg'):
+
+        # parse client id from request
+        client_id = tree.xpath('//client')[0].text
+        guid = tree.xpath('//guid')[0].text
+        try:
+          helper.add_kunde_to_course(guid, client_id)
+        except:
+          await websocket.send('Leider wurde die GUID nicht gefunden.')
+        else:
+          await websocket.send('Kursbuchung erfolgreich')
 
     else:
         await websocket.send('Falscher Request')

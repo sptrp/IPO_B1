@@ -58,6 +58,7 @@ show_some_elems: sse
 show_my_courses: mcs
 show_all_courses: acs
 show_all_info: asa
+book_with_guid: bwg
 """
     config.read_string(start_cfg)
     config.write(configfile)
@@ -77,14 +78,15 @@ def config_switcher(config, configfile):
 
 
 # create request 
-def create_request(config, calltype, client_id): 
+def create_request(config, calltype, client_id, guid=''): 
   return E.request(
             E.course_request(
                 E.format(config['misc']['format'].value),
                 E.calltype(str(calltype)),
                 E.element(""),
                 E.value(""),
-                E.client(str(client_id))
+                E.client(str(client_id)),
+                E.guid(guid)
             )
         )
 
@@ -96,7 +98,8 @@ def create_elem_request(config, elem, calltype, value, client_id):
                 E.calltype(str(calltype)),
                 E.element(elem),
                 E.value(value),
-                E.client(str(client_id))
+                E.client(str(client_id)),
+                E.guid("")
             )
         )        
 
@@ -147,6 +150,30 @@ def create_kundenxml(client_id,vorname,nachname,strasse,plz,ort,land,nummer,mail
 
   root.insert(1, new)
   tree.write(os.path.join(sys.path[0], 'kunden.xml'), encoding="utf-8", xml_declaration=True)
+
+
+#create xml kunden file
+def create_kunden_element(client_id,vorname,nachname,strasse,plz,ort,land,nummer,mail):
+  xml_kunde = os.path.join(sys.path[0], 'kunden.xml') 
+  tree = etree.parse(xml_kunde)
+  root = tree.getroot()
+  
+  new = E.kunde(
+      E.id(client_id),
+      E.vorname(vorname),
+      E.nachname(nachname),
+      E.adresse (
+        E.strasse(strasse),
+        E.plz(plz),
+        E.ort(ort),
+        E.land(land)
+      ),
+      E.nummer(nummer),
+      E.mail(mail)
+    )
+  return new
+  #root.insert(1, new)
+  #tree.write(os.path.join(sys.path[0], 'kunden.xml'), encoding="utf-8", xml_declaration=True)  
 
 #add kunde to course with guid
 def add_kunde_to_course(guid, client_id):

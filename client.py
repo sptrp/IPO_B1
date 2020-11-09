@@ -100,10 +100,19 @@ async def demo():
 
               elif subchoice2 == '2':
                 guid = input("Bitte die GUID des Kurses eingeben: ")
-                helper.add_kunde_to_course(guid,str(client_id))
+                config.read(config_path)
+                calltype = config['calltype']['book_with_guid'].value
+                format = config['misc']['format'].value
+                request = helper.create_request(config, calltype, client_id, guid) 
+                print(et.tostring(request, encoding='utf8', method='xml'))
+                await ws.send(et.tostring(request, encoding='utf8', method='xml'))
+                response = await ws.recv()
+                print(response)
+                time.sleep(1)
 
               elif subchoice2 == '3':
-                print("sdaad")
+                print("Zurueck zum Hauptmenu...")
+                time.sleep(1)
                 
               else:
                 choice = '0'
