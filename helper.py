@@ -2,6 +2,8 @@ from configupdater import ConfigUpdater
 # for xml requests (Nikolai's advice)
 from lxml.builder import E
 from lxml import etree
+import xmlschema, xml.etree.ElementTree as et
+import lxml.builder as lb
 
 def create_config(config, config_path):
   # create config file
@@ -88,6 +90,35 @@ def create_elem_request(config, elem, calltype, value, client_id):
             )
         )        
 
+#validate xml with schema (aus den Skripten zur Vorlesung entnommen)
+def xml_validator(input, schema):
+
+    xml = et.parse(input)
+    xsd = xmlschema.XMLSchema(schema)
+
+    result = xsd.is_valid(xml)
+
+    print(result)
+    return result
+
+#create xml kunden file
+def create_xml_kunden(kundenpath, client_id, vorname, nachname, strasse, plz, ort, land, telefonnummer, mail, guid):
+    content = lb.E.kunde(
+      lb.E.id('{0}'.format(client_id)),
+      lb.E.vorname('{0}'.format(vorname)),
+      lb.E.nachname('{0}'.format(nachname)),
+      lb.E.adresse(
+        lb.E.strasse('{0}'.format(strasse)),
+        lb.E.plz('{0}'.format(plz)),
+        lb.E.ort('{0}'.format(ort)),
+        lb.E.land('{0}'.format(land))
+        ),
+      lb.E.telefonnummer('{0}'.format(telefonnummer)),
+      lb.E.mail('{0}'.format(mail)),
+      lb.E.kurse('{0}'.format(guid)),
+      )
+    f = open(kundenpath, 'w')
+    f.write('<?xml version="1.0" encoding="utf-8"?>' + '\n' + str(etree.tounicode(content, pretty_print=True)))
 
 # path for all booked coursed
 def path_constructor(kunde, val):
