@@ -191,12 +191,22 @@ def xml_trimmer(tree):
             'beginn_datum', 'ende_datum', 'zielgruppe', 'schlagwort', 'text', 'veranstaltungsort', 'preis',
             'webadresse']
   for fltr in filters:
-
     for elem in tree.xpath('//veranstaltung/%s' % fltr):
         elem.getparent().remove(elem)
 
   return tree
 
+# 'Name', 'Untertitel', 'beginn_datum', 'minimale_teilnehmerzahl', 'maximale_teilnehmerzahl'
+def xml_trimmer_mybooks(tree):
+  filters = ['dvv_kategorie', 'anzahl_termine', 'ende_datum', 'zielgruppe', 'schlagwort', 'text', 
+  'veranstaltungsort', 'preis', 'guid', 'nummer', 'webadresse']
+  for fltr in filters:
+    for elem in tree.xpath('//veranstaltung/%s' % fltr):
+        elem.getparent().remove(elem)  
+
+  return tree
+
+  
 # path for all booked coursed
 def path_constructor_book(kunde, val):
   return "//veranstaltung/buchung[{}={}]" .format(kunde, val)

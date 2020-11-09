@@ -41,7 +41,6 @@ def find_all_courses(format):
     chunk.append(output_string[0 : 475860])
     chunk.append(output_string[475860 : 961720])
     chunk.append(output_string[961720 : -1])
-  
     return chunk
 
   else: 
@@ -73,22 +72,17 @@ def find_all_courses(format):
     return output_string 
 
 
-def find_elems_from_query(format, path, calltype):
+def find_my_bookings(format, path):
   joined_string = ""
   # check format
   if (format == 'xml'):
-    tree = et.parse(xml)
+    tree = helper.xml_trimmer_mybooks(et.parse(xml))
     root = tree.getroot()
     elems = root.xpath(path)
 
-    if (calltype == 'mcs' or calltype == 'div'):
-      for targ in elems: 
-        for dept in targ.xpath('ancestor-or-self::veranstaltung'):
-          joined_string = joined_string + et.tostring(dept, encoding="unicode", pretty_print=True)
-        
-    else:
-      # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
-      joined_string = joined_string.join([et.tostring(elem, encoding="utf8", pretty_print=True) for elem in elems])
+    for targ in elems: 
+      for dept in targ.xpath('ancestor-or-self::veranstaltung'):
+        joined_string = joined_string + et.tostring(dept, encoding="unicode", pretty_print=True)
 
     return joined_string
     
@@ -97,17 +91,19 @@ def find_elems_from_query(format, path, calltype):
     rows = []
     tree = et.parse(xml)
     root = tree.getroot()
-    cols = [' Name', ' Untertitel', ' Minimale Teilnehmerzahl', ' Maximale Teilnehmerzahl', ' Beginn Datum']
+    cols = [' Name', ' Untertitel', ' Minimale Teilnehmerzahl', ' Maximale Teilnehmerzahl', ' Beginn Datum', ' Anzahl Buchungen']
     # give the temp data distinct name
     file_name = 'my_courses%s.csv' % os.getpid()
 
     # parse all found elements and make dict
     for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
       for dept in targ.xpath('ancestor-or-self::veranstaltung'):
-        my_dict[dept[0].text] = { "Name" : dept[2].text, "Untertitel" : dept[3].text,
+        my_dict[dept[0].text] = { "Name" : dept[2].text, 
+                                  "Untertitel" : dept[3].text,
                                   "Minimale Teilnehmerzahl" : dept[5].text,
                                   "Maximale Teilnehmerzahl" : dept[6].text,
-                                  "Beginn Datum" : dept[8].text
+                                  "Beginn Datum" : dept[8].text,
+                                  "Anzahl Buchungen": 'test'
                                 }                                                                   
     try:
       with open(file_name, 'w') as file:
@@ -116,7 +112,8 @@ def find_elems_from_query(format, path, calltype):
           rows.append({ " Name": my_dict[elem]['Name'], " Untertitel": my_dict[elem]['Untertitel'],
                         " Minimale Teilnehmerzahl": my_dict[elem]['Minimale Teilnehmerzahl'], 
                         " Maximale Teilnehmerzahl": my_dict[elem]['Maximale Teilnehmerzahl'], 
-                        " Beginn Datum": my_dict[elem]['Beginn Datum'] 
+                        " Beginn Datum": my_dict[elem]['Beginn Datum'],
+                        " Anzahl Buchungen": my_dict[elem]['Anzahl Buchungen']  
                       })
         dataframe = pd.DataFrame(rows, columns = cols) 
         dataframe.to_csv(file_name)
@@ -131,18 +128,67 @@ def find_elems_from_query(format, path, calltype):
 
     return output_string
 
-# validator for incoming xml  
+def find_diverse_from_query(format, path):
+  joined_string = ""
+  # check format
+  if (format == 'xml'):
+    tree = helper.xml_trimmer(et.parse(xml))
+    root = tree.getroot()
+    elems = root.xpath(path)
+
+    for targ in elems: 
+      for dept in targ.xpath('ancestor-or-self::veranstaltung'):
+        joined_string = joined_string + et.tostring(dept, encoding="unicode", pretty_print=True)
+
+    return joined_string
+    
+  else:   
+    my_dict = {}
+    rows = []
+    tree = et.parse(xml)
+    root = tree.getroot()
+    cols = [' Guid', ' Nummer', ' Name', ' Untertitel']
+    # give the temp data distinct name
+    file_name = 'my_courses%s.csv' % os.getpid()
+
+    # parse all found elements and make dict
+    for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
+      for dept in targ.xpath('ancestor-or-self::veranstaltung'):
+        my_dict[dept[0].text] = { "Guid" : dept[0].text, "Nummer" : dept[1].text,
+                                  "Name" : dept[2].text,
+                                  "Untertitel" : dept[3].text
+                                }                                                                   
+    try:
+      with open(file_name, 'w') as file:
+        for elem in my_dict:
+          # parse elements and write to csv
+          rows.append({ " Guid": my_dict[elem]['Guid'], " Nummer": my_dict[elem]['Nummer'],
+                        " Name": my_dict[elem]['Name'], " Untertitel": my_dict[elem]['Untertitel'],
+                      })
+        dataframe = pd.DataFrame(rows, columns = cols) 
+        dataframe.to_csv(file_name)
+    except IOError:
+        print("I/O error")
+    finally:
+      with open(file_name, encoding="utf8") as f:
+        # place csv data in output string
+        output_string = f.read() + '\n'
+      # remove temp file
+      os.remove(file_name)
+
+    return output_string
+
+# validator for incoming request  
 def xml_validator(input, schema):
-  with open(input, 'rb') as x:
     # create parser from xsd schema
     with open(schema, 'rb') as s:
-      xml_root = et.tostring(et.XML(x.read()), encoding='utf8', method='xml')
       schema_root = et.XML(s.read())
       val_schema = et.XMLSchema(schema_root)
       parser = et.XMLParser(schema=val_schema)
 
     try:
-      et.fromstring(xml_root, parser) 
+      # pass request
+      et.fromstring(input, parser) 
       return True # return true if file is valid
     except et.XMLSyntaxError: 
       print("Request Fehler: Falscher Request") # return exception and error message if not
@@ -152,7 +198,7 @@ async def echo(websocket, path):
   async for message in websocket:
     
     # validate request
-    if xml_validator(xml_snip, schema):
+    if xml_validator(message, request_schema):
 
       tree = et.ElementTree(et.fromstring(message))
       # parse format and calltype from request
@@ -173,20 +219,19 @@ async def echo(websocket, path):
         value = tree.xpath('//value')[0].text
         # build path
         if (elem == 'divers'):
-          calltype = 'div'
           path = helper.path_constructor_divers(value)
           print (path)
         else: 
           path = helper.path_constructor_elem(elem, value) 
 
-        await websocket.send(find_elems_from_query(format, path, calltype))
+        await websocket.send(find_diverse_from_query(format, path))
 
       elif (calltype == 'mcs'):
         # parse client id from request
         client_id = tree.xpath('//client')[0].text
         # build path
         path = helper.path_constructor_book('kunde', client_id)
-        await websocket.send(find_elems_from_query(format, path, calltype) )
+        await websocket.send(str(find_my_bookings(format, path)))
 
       elif (calltype == 'bwg'):
 
