@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
 <kunden>
   <kunde>
     <id>11201</id>
@@ -14,4 +15,4 @@
     <kurse>578841</kurse>
     <kurse>569306</kurse>
   </kunde>
-</kunden>
+<kunde><id>5466</id><vorname></vorname><nachname></nachname><adresse><strasse></strasse><plz></plz><ort></ort><land></land></adresse><nummer></nummer><mail></mail></kunde></kunden>

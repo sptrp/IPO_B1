@@ -1,4 +1,4 @@
-<?xml version="1.0" ?>
+<?xml version='1.0' encoding='utf-8'?>
 <veranstaltungen>
     <veranstaltung>
         <guid>569306</guid>
@@ -47,7 +47,7 @@
         </webadresse>
         <buchung>
             <kunde>75875</kunde>
-        </buchung>   
+        <kunde>5656</kunde></buchung>   
     </veranstaltung>
     <veranstaltung>
         <guid>578841</guid>
