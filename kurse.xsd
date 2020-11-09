@@ -9,7 +9,7 @@
               <xs:element name="guid">
                 <xs:simpleType>
                   <xs:restriction base="xs:unsignedInt">
-                    <xs:minInclusive value="100000" />
+                    <xs:minInclusive value="0" />
                     <xs:maxInclusive value="999999" />
                   </xs:restriction>
                 </xs:simpleType>  
@@ -20,38 +20,38 @@
               <xs:element name="dvv_kategorie">
                 <xs:complexType>
                   <xs:simpleContent>
-                    <xs:extension base="xs:decimal">
-                      <xs:attribute name="version" type="xs:decimal" use="required" />
+                    <xs:extension base="xs:float">
+                      <xs:attribute name="version" type="xs:float" use="required" />
                     </xs:extension>
                   </xs:simpleContent>
                 </xs:complexType>
               </xs:element>
               <xs:element name="minimale_teilnehmerzahl">
                 <xs:simpleType>
-                  <xs:restriction base="xs:unsignedInt">
+                  <xs:restriction base="xs:int">
                     <xs:minInclusive value="0"/>
                   </xs:restriction>
                 </xs:simpleType>  
               </xs:element>  
               <xs:element name="maximale_teilnehmerzahl">
                 <xs:simpleType>
-                  <xs:restriction base="xs:unsignedInt">
-                    <xs:minInclusive value="1"/>
+                  <xs:restriction base="xs:int">
+                    <xs:minInclusive value="0"/>
                   </xs:restriction>
                 </xs:simpleType>  
               </xs:element>  
               <xs:element name="anzahl_termine">
                 <xs:simpleType>
-                  <xs:restriction base="xs:unsignedInt">
-                    <xs:minInclusive value="1"/>
+                  <xs:restriction base="xs:int">
+                    <xs:minInclusive value="0"/>
                   </xs:restriction>
                 </xs:simpleType>  
               </xs:element>  
               <xs:element name="beginn_datum" type="xs:date" />
               <xs:element name="ende_datum" type="xs:date" />
               <xs:element name="zielgruppe" type="xs:string" />
-              <xs:element maxOccurs="unbounded" name="schlagwort" type="xs:string" />
-              <xs:element maxOccurs="unbounded" name="text">
+              <xs:element maxOccurs="unbounded" name="schlagwort" type="xs:string" minOccurs="0" />
+              <xs:element maxOccurs="unbounded" name="text" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="eigenschaft" type="xs:string" />
@@ -67,14 +67,16 @@
                       <xs:complexType>
                         <xs:sequence>
                           <xs:element name="land" type="xs:string" />
-                          <xs:element name="plz">
-                            <xs:simpleType>
-                              <xs:restriction base="xs:unsignedInt">
-                                <xs:minInclusive value="00000"/>
-                                <xs:maxInclusive value="99999"/>
+                         <xs:element name="plz">
+                          <xs:simpleType>
+                              <xs:restriction base="xs:string">
+                                <!-- VON NIKOLAIS GRUPPE KOPIERT-->
+                                  <!-- PLZ hier als String, da Zahlen nur bei Berechnungen
+                                    verwendet werden sollten. Der String kann leer sein-->
+                                  <xs:pattern value="(^$|[0-9]{5})?"/>
                               </xs:restriction>
-                            </xs:simpleType>  
-                          </xs:element>    
+                          </xs:simpleType>
+                      </xs:element>
                           <xs:element name="ort" type="xs:string" />
                           <xs:element name="strasse" type="xs:string" />
                         </xs:sequence>
@@ -87,7 +89,7 @@
               <xs:element name="preis">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="betrag" type="xs:decimal" />
+                    <xs:element name="betrag" type="xs:float" />
                     <xs:element name="rabatt_moeglich" type="xs:boolean" />
                     <xs:element name="zusatz" type="xs:string" />
                   </xs:sequence>
@@ -98,24 +100,12 @@
                   <xs:sequence>
                     <xs:element name="typ" type="xs:string" />
                     <xs:element name="name" type="xs:string" />
-                    <xs:element name="uri">
-                      <xs:simpleType>
-                        <xs:restriction base="xs:string">
-                          <xs:pattern value="http://www.[a-zA-Z \d\p{P}\p{S}]+"/>
-                        </xs:restriction>
-                      </xs:simpleType>
-                    </xs:element>
+                    <xs:element type="xs:anyURI" name="uri"/>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="buchung">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="kunde" minOccurs="0" maxOccurs="unbounded" type="xs:unsignedInt" />
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>      
-            </xs:sequence>
+              <xs:element name="buchungid" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
+          </xs:sequence>
           </xs:complexType>
         </xs:element>
       </xs:sequence>

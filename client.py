@@ -95,7 +95,7 @@ async def demo():
                 mail = input("Ihre E-Mail-Adresse: ")
                 helper.create_kundenxml(str(client_id),vorname,nachname,strasse,plz,ort,land,nummer,mail)
                 time.sleep(1)
-                print("Kundendaten hinzugefuegt. Zurueck zum Hauptmenu..")
+                print("Zurueck zum Hauptmenu..")
                 choice = '0'
 
               elif subchoice2 == '2':
@@ -103,8 +103,8 @@ async def demo():
                 config.read(config_path)
                 calltype = config['calltype']['book_with_guid'].value
                 format = config['misc']['format'].value
-                request = helper.create_request(config, calltype, client_id, guid) 
-                print(et.tostring(request, encoding='utf8', method='xml'))
+                request = helper.create_request(config, calltype, client_id, guid)
+                print("Datei wird validiert...") 
                 await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 response = await ws.recv()
                 print(response)

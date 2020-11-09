@@ -10,9 +10,9 @@
       <ort>Berlin</ort>
       <land>Deutschland</land>
     </adresse>
-    <nummer>warum?</nummer>
+    <nummer>0304755213</nummer>
     <mail>abc@ab.ab</mail>
     <kurse>578841</kurse>
     <kurse>569306</kurse>
   </kunde>
-<kunde><id>5466</id><vorname></vorname><nachname></nachname><adresse><strasse></strasse><plz></plz><ort></ort><land></land></adresse><nummer></nummer><mail></mail></kunde></kunden>
+</kunden>

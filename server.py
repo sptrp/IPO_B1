@@ -21,7 +21,7 @@ import helper
 # logger
 #logging.basicConfig(level=logging.DEBUG)
 
-xml = os.path.join(sys.path[0], 'kurse_snippet.xml')
+xml = os.path.join(sys.path[0], 'kurse.xml')
 xml_snip = os.path.join(sys.path[0], 'kurse_snippet.xml')     #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
 request_schema = os.path.join(sys.path[0], 'request.xsd')  
@@ -128,7 +128,7 @@ def find_my_bookings(format, path):
 
     return output_string
 
-def find_diverse_from_query(format, path):
+def find_diverse_from_query(format, path, calltype=''):
   joined_string = ""
   # check format
   if (format == 'xml'):
@@ -224,13 +224,13 @@ async def echo(websocket, path):
         else: 
           path = helper.path_constructor_elem(elem, value) 
 
-        await websocket.send(find_diverse_from_query(format, path))
+        await websocket.send(find_diverse_from_query(format, path, calltype))
 
       elif (calltype == 'mcs'):
         # parse client id from request
         client_id = tree.xpath('//client')[0].text
         # build path
-        path = helper.path_constructor_book('kunde', client_id)
+        path = helper.path_constructor_book(client_id)
         await websocket.send(str(find_my_bookings(format, path)))
 
       elif (calltype == 'bwg'):
@@ -243,11 +243,11 @@ async def echo(websocket, path):
         except:
           await websocket.send('Leider wurde die GUID nicht gefunden.')
         else:
-          await websocket.send('Kursbuchung erfolgreich')
+          await websocket.send('Buchung erfolgreich!')
 
     else:
         await websocket.send('Falscher Request')
 
-asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765, max_size = None) )
+asyncio.get_event_loop().run_until_complete( websockets.serve(echo, "localhost", 8765, max_size = 2**25, ping_timeout=10000000) )
 print("Running service at https//:localhost:8765")
 asyncio.get_event_loop().run_forever()
