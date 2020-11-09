@@ -2,8 +2,9 @@ from configupdater import ConfigUpdater
 # for xml requests (Nikolai's advice)
 from lxml.builder import E
 from lxml import etree
-import xmlschema, xml.etree.ElementTree as et
-import lxml.builder as lb
+import os
+import sys
+import xml.etree.ElementTree as ET
 
 def create_config(config, config_path):
   # create config file
@@ -102,23 +103,39 @@ def xml_validator(input, schema):
     return result
 
 #create xml kunden file
-def create_xml_kunden(kundenpath, client_id, vorname, nachname, strasse, plz, ort, land, telefonnummer, mail, guid):
-    content = lb.E.kunde(
-      lb.E.id('{0}'.format(client_id)),
-      lb.E.vorname('{0}'.format(vorname)),
-      lb.E.nachname('{0}'.format(nachname)),
-      lb.E.adresse(
-        lb.E.strasse('{0}'.format(strasse)),
-        lb.E.plz('{0}'.format(plz)),
-        lb.E.ort('{0}'.format(ort)),
-        lb.E.land('{0}'.format(land))
-        ),
-      lb.E.telefonnummer('{0}'.format(telefonnummer)),
-      lb.E.mail('{0}'.format(mail)),
-      lb.E.kurse('{0}'.format(guid)),
-      )
-    f = open(kundenpath, 'w')
-    f.write('<?xml version="1.0" encoding="utf-8"?>' + '\n' + str(etree.tounicode(content, pretty_print=True)))
+def create_kundenxml(client_id,vorname,nachname,strasse,plz,ort,land,nummer,mail):
+  xml_kunde = os.path.join(sys.path[0], 'kunden.xml') 
+  tree = ET.parse(xml_kunde)
+  root = tree.getroot()
+  
+  new = ET.Element('kunde')
+  newsub1 = ET.SubElement(new,'id')
+  newsub1.text = 'Kundennummer'
+  newsub2 = ET.SubElement(new,'vorname')
+  newsub2.text = 'vorn'
+  newsub3 = ET.SubElement(new,'nachname')
+  newsub3.text = 'nn'
+  newsub4 = ET.SubElement(new,'adresse')
+  newsub4.text = ''
+  newsub_ad = ET.SubElement(newsub4, 'strasse')
+  newsub_ad.text = 'Asdasstr. 34'
+  newsub_ad = ET.SubElement(newsub4, 'plz')
+  newsub_ad.text = '12345'
+  newsub_ad = ET.SubElement(newsub4, 'ort')
+  newsub_ad.text = 'Asdasstr. 34'
+  newsub_ad = ET.SubElement(newsub4, 'land')
+  newsub_ad.text = 'Asdasstr. 34'
+  newsub5 = ET.SubElement(new,'nummer')
+  newsub5.text = '123'
+  newsub6 = ET.SubElement(new,'mail')
+  newsub6.text = 'as@da.de'
+  newsub7 = ET.SubElement(new,'kurse')
+
+  root.append(new)
+  tree.write(os.path.join(sys.path[0], 'kunden.xml'))
+
+#client_id = os.getpid()
+#create_kundenxml(client_id,"HEROLD","HUNTER","HRASTR. 4", "12311", "BERLIN", "GER", "12314142","ab@ce.df")
 
 # path for all booked coursed
 def path_constructor(kunde, val):
