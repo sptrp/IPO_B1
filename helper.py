@@ -33,12 +33,12 @@ repeat: Bitte wiederholen Sie die Eingabe.
 
 [submenu2]
 title: Bitte waehlen Sie, nach welchen Elementen Sie suchen wollen:
-alle: 1) Alle Kurse abrufen.
-guid: 2) Nach GU-ID filtern.
-nummer: 3) Nach Nummer filtern.
-name: 4) Nach Name filtern.
+alle: 1) Alle Kurse abrufen
+guid: 2) Nach GU-ID filtern
+nummer: 3) Nach Nummer filtern
+name: 4) Nach Name filtern
 attribute: 5) Überall suchen
-back: 6) Zurueck.
+back: 6) Zurueck
 choice: Ihre Wahl: 
 choice_guid: Bitte GUID angeben :
 choice_nummer: Bitte Nummer angeben : 
@@ -127,30 +127,6 @@ def create_kundenxml(client_id,vorname,nachname,strasse,plz,ort,land,nummer,mail
   root.insert(1, new)
   tree.write(os.path.join(sys.path[0], 'kunden.xml'), encoding="utf-8", xml_declaration=True)
 
-"""
-#create xml kunden file
-def create_kunden_element(client_id,vorname,nachname,strasse,plz,ort,land,nummer,mail):
-  xml_kunde = os.path.join(sys.path[0], 'kunden.xml') 
-  tree = etree.parse(xml_kunde)
-  root = tree.getroot()
-  
-  new = E.kunde(
-      E.id(client_id),
-      E.vorname(vorname),
-      E.nachname(nachname),
-      E.adresse (
-        E.strasse(strasse),
-        E.plz(plz),
-        E.ort(ort),
-        E.land(land)
-      ),
-      E.nummer(nummer),
-      E.mail(mail)
-    )
-  
-  root.insert(1, new)
-  tree.write(os.path.join(sys.path[0], 'kunden.xml'), encoding="utf-8", xml_declaration=True)  
-"""
 
 #add kunde to course with guid
 def add_kunde_to_course(guid, client_id):
@@ -215,5 +191,4 @@ def xml_validator_file(input, schema):
 
     result = xsd.is_valid(xml)
 
-    print(result)
     return result

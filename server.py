@@ -21,8 +21,7 @@ import helper
 # logger
 #logging.basicConfig(level=logging.DEBUG)
 
-xml = os.path.join(sys.path[0], 'kurse.xml')
-xml_snip = os.path.join(sys.path[0], 'kurse_snippet.xml')     #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
+xml = os.path.join(sys.path[0], 'kurse.xml')  #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
 request_schema = os.path.join(sys.path[0], 'request.xsd')  
 
@@ -220,7 +219,6 @@ async def echo(websocket, path):
         # build path
         if (elem == 'divers'):
           path = helper.path_constructor_divers(value)
-          print (path)
         else: 
           path = helper.path_constructor_elem(elem, value) 
 
