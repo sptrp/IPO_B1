@@ -138,7 +138,7 @@ def create_kundenxml(client_id,vorname,nachname,strasse,plz,ort,land,nummer,mail
 #create_kundenxml(client_id,"HEROLD","HUNTER","HRASTR. 4", "12311", "BERLIN", "GER", "12314142","ab@ce.df")
 
 # path for all booked coursed
-def path_constructor(kunde, val):
+def path_constructor_book(kunde, val):
   return "//veranstaltung/buchung[{}={}]" .format(kunde, val)
 
 # path for specific attribute
@@ -147,7 +147,7 @@ def path_constructor_elem(attribute, val):
 
 # path for string in text
 def path_constructor_divers(val):
-  return "//veranstaltung/*[contains(text(), '{}')]" .format(val)
+  return "//*[contains(text(), '{}')]" .format(val)
 
 # path for string in text in specific attribute
 def path_constructor_onlyname(attribute, val):
