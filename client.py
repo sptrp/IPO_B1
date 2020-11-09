@@ -105,7 +105,7 @@ async def demo():
                 await ws.send(et.tostring(request, encoding='utf8', method='xml'))
                 
                 if (format == 'xml'):
-                  for i in range(17):           
+                  for i in range(3):           
                     # recv() receives data from the server
                     response = await ws.recv()
                     print(response)

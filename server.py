@@ -19,7 +19,7 @@ import os
 import helper 
 
 # logger
-logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.DEBUG)
 
 xml = os.path.join(sys.path[0], 'kurse.xml')
 xml_snip = os.path.join(sys.path[0], 'kurse_snippet.xml')     #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
@@ -34,26 +34,13 @@ def find_all_courses(format):
   chunk = []
 
   if (format == 'xml'):
-    output_string = et.tostring(root, encoding='utf8', method='xml')
+    tree = helper.xml_trimmer(tree)
+    root = tree.getroot()
 
-    # Split message on 15 chunks, because it's too big (Nikolai's advice)
-    chunk.append(output_string[0 : 123460])
-    chunk.append(output_string[123460 : 246920])
-    chunk.append(output_string[246920 : 493840])
-    chunk.append(output_string[493840 : 987680])
-    chunk.append(output_string[987680 : 1975360])
-    chunk.append(output_string[1975360 : 2963040])
-    chunk.append(output_string[2963040 : 3950720])
-    chunk.append(output_string[3950720 : 4938400])
-    chunk.append(output_string[4938400 : 5926080])
-    chunk.append(output_string[5926080 : 6913760])
-    chunk.append(output_string[5926080 : 6913760])
-    chunk.append(output_string[6913760 : 7913760])
-    chunk.append(output_string[7913760 : 8913760])
-    chunk.append(output_string[8913760 : 9913760])
-    chunk.append(output_string[9913760 : 10913760])
-    chunk.append(output_string[10913760 : 11913760])
-    chunk.append(output_string[11913760 : -1])
+    output_string = et.tostring(root, encoding="utf8")
+    chunk.append(output_string[0 : 475860])
+    chunk.append(output_string[475860 : 961720])
+    chunk.append(output_string[961720 : -1])
 
     return chunk
 
@@ -97,11 +84,11 @@ def find_elems_from_query(format, path, calltype):
     if (calltype == 'mcs' or calltype == 'div'):
       for targ in elems: 
         for dept in targ.xpath('ancestor-or-self::veranstaltung'):
-          joined_string = joined_string + et.tostring(dept, encoding="unicode", pretty_print=True)
+          joined_string = joined_string + et.tostring(dept, encoding="utf8", pretty_print=True)
         
     else:
       # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
-      joined_string = joined_string.join([et.tostring(elem, encoding="unicode", pretty_print=True) for elem in elems])
+      joined_string = joined_string.join([et.tostring(elem, encoding="utf8", pretty_print=True) for elem in elems])
 
     return joined_string
     
@@ -173,13 +160,13 @@ async def echo(websocket, path):
       calltype = tree.xpath('//calltype')[0].text
 
       if (calltype == 'acs'):
-        if (format == 'xml'):
-          response = find_all_courses(format)
+          if (format == 'xml'):
+            response = find_all_courses(format)
 
-          for elem in response:
-            await websocket.send(elem)
-        else: 
-          await websocket.send(str(find_all_courses(format)))
+            for elem in response:
+              await websocket.send(elem)
+          else: 
+            await websocket.send(str(find_all_courses(format)))
 
       elif (calltype == 'sse'):
         elem = tree.xpath('//element')[0].text
