@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<kunden>
+  <kunde>
+    <id>11201</id>
+    <vorname>Max</vorname>
+    <nachname>Muster</nachname>
+    <adresse>
+      <strasse>Maxstrasse 2</strasse>
+      <plz>10551</plz>
+      <ort>Berlin</ort>
+      <land>Deutschland</land>
+    </adresse>
+    <nummer>0304755213</nummer>
+    <mail>abc@ab.ab</mail>
+    <kurse>578841</kurse>
+    <kurse>569306</kurse>
+  </kunde>
+</kunden>

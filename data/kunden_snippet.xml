@@ -1,0 +1,158 @@
+<veranstaltungen>
+    <veranstaltung>
+        <guid>569306</guid>
+        <nummer>Re4281-H</nummer>
+        <name>Englisch B2 - Language through Literature</name>
+        <untertitel>Literatur und Konversation</untertitel>
+        <dvv_kategorie version="1.0">4.06</dvv_kategorie>
+        <minimale_teilnehmerzahl>4</minimale_teilnehmerzahl>
+        <maximale_teilnehmerzahl>8</maximale_teilnehmerzahl>
+        <anzahl_termine>14</anzahl_termine>
+        <beginn_datum>2020-10-27</beginn_datum>
+        <ende_datum>2020-12-08</ende_datum>
+        <zielgruppe />
+        <schlagwort>B2</schlagwort>
+        <schlagwort>Englisch</schlagwort>
+        <schlagwort>Konversation</schlagwort>
+        <schlagwort>Literatur</schlagwort>
+        <schlagwort>SPRACHEN</schlagwort>
+        <text>
+            <eigenschaft>Beschreibung</eigenschaft>
+            <text>We will read and discuss various works of English and American literature - mainly short stories. A chance to enjoy literature and practise your English.</text>
+        </text>
+        <text>
+            <eigenschaft>Zusatzinformation</eigenschaft>
+            <text />
+        </text>
+        <veranstaltungsort>
+            <name>Lehrst&#228;tte Frohnau</name>
+            <adresse>
+                <land>Deutschland</land>
+                <plz>13465</plz>
+                <ort>Berlin</ort>
+                <strasse>Fuchssteiner Weg 13 - 19, Hofeingang</strasse>
+            </adresse>
+            <barrierefrei>false</barrierefrei>
+        </veranstaltungsort>
+        <preis>
+            <betrag>44.02</betrag>
+            <rabatt_moeglich>true</rabatt_moeglich>
+            <zusatz>erm. Preis: 25,61 EUR</zusatz>
+        </preis>
+        <webadresse>
+            <typ>website</typ>
+            <name>zur Kursbuchung</name>
+            <uri>http://www.vhsit.berlin.de/VHSKURSE/BusinessPages/CourseDetail.aspx?id=569306</uri>
+        </webadresse>
+        <buchung>
+            <kunde>75875</kunde>
+        <kunde>12345</kunde></buchung>   
+    </veranstaltung>
+    <veranstaltung>
+        <guid>578841</guid>
+        <nummer>TK-4304-1-H</nummer>
+        <name>Spanisch A1.2 - etwas schneller!</name>
+        <untertitel>ein Intensivkurs </untertitel>
+        <dvv_kategorie version="1.0">4.22</dvv_kategorie>
+        <minimale_teilnehmerzahl>8</minimale_teilnehmerzahl>
+        <maximale_teilnehmerzahl>9</maximale_teilnehmerzahl>
+        <anzahl_termine>30</anzahl_termine>
+        <beginn_datum>2020-10-27</beginn_datum>
+        <ende_datum>2020-11-26</ende_datum>
+        <zielgruppe />
+        <schlagwort>A1</schlagwort>
+        <schlagwort>Aufbaukurs</schlagwort>
+        <schlagwort>Auffrischung</schlagwort>
+        <schlagwort>Ausdruck</schlagwort>
+        <schlagwort>Formulieren</schlagwort>
+        <schlagwort>Grammatik</schlagwort>
+        <schlagwort>Intensivkurs</schlagwort>
+        <schlagwort>Spanisch</schlagwort>
+        <schlagwort>SPRACHEN</schlagwort>
+        <schlagwort>Wortschatz</schlagwort>
+        <text>
+            <eigenschaft>Beschreibung</eigenschaft>
+            <text>Sie wollen im Sommer nach Spanien oder Lateinamerika reisen und sprechen kein Wort Spanisch? Dann sollten Sie diesen Kurs besuchen. Es werden grundlegende Kenntnisse zur Verst&#228;ndigung in Alltagssituationen sowie landeskundliche Informationen vermittelt. Grammatik und Aussprache erlernen Sie von Grund auf, Schritt f&#252;r Schritt.
+Der Kurs ist auch f&#252;r Studierende geeignet.
+Vorkenntnisse: A1.1</text>
+        </text>
+        <text>
+            <eigenschaft>Zusatzinformation</eigenschaft>
+            <text>Lehrwerk: Con gusto A1 nuevo , Kurs- und &#220;bungsbuch, Verlag Klett, ISBN 978-3-12-514671-6</text>
+        </text>
+        <veranstaltungsort>
+            <name>VHS Lernzentrum</name>
+            <adresse>
+                <land>Deutschland</land>
+                <plz>12437</plz>
+                <ort>Berlin</ort>
+                <strasse>Baumschulenstra&#223;e 79-81</strasse>
+            </adresse>
+            <barrierefrei>false</barrierefrei>
+        </veranstaltungsort>
+        <preis>
+            <betrag>101.50</betrag>
+            <rabatt_moeglich>true</rabatt_moeglich>
+            <zusatz>erm. Preis: 54,25 EUR</zusatz>
+        </preis>
+        <webadresse>
+            <typ>website</typ>
+            <name>zur Kursbuchung</name>
+            <uri>http://www.vhsit.berlin.de/VHSKURSE/BusinessPages/CourseDetail.aspx?id=578841</uri>
+        </webadresse>
+        <buchung>
+            <kunde>75875</kunde>
+        </buchung>   
+    </veranstaltung>
+    <veranstaltung>
+        <guid>569060</guid>
+        <nummer>Sp6.559-H</nummer>
+        <name>55plus: Smartphone (Android)</name>
+        <untertitel>Angebot f&#252;r Senioren</untertitel>
+        <dvv_kategorie version="1.0">5.00</dvv_kategorie>
+        <minimale_teilnehmerzahl>5</minimale_teilnehmerzahl>
+        <maximale_teilnehmerzahl>7</maximale_teilnehmerzahl>
+        <anzahl_termine>16</anzahl_termine>
+        <beginn_datum>2020-10-27</beginn_datum>
+        <ende_datum>2020-10-30</ende_datum>
+        <zielgruppe>&#196;ltere</zielgruppe>
+        <schlagwort>ARBEIT-BERUF-EDV</schlagwort>
+        <schlagwort>BERUF</schlagwort>
+        <schlagwort>EDV</schlagwort>
+        <schlagwort>Internet</schlagwort>
+        <schlagwort>Netzwerke</schlagwort>
+        <schlagwort>Senioren</schlagwort>
+        <text>
+            <eigenschaft>Beschreibung</eigenschaft>
+            <text>Eigentlich wollten Sie ja nur ein neues Telefon, doch nun haben Sie so ein neues Ger&#228;t mit den gef&#252;hlt hunderttausend Funktionen. Nur B&#252;geln und Teekochen kann es wohl noch nicht. Und ein richtiges Handbuch gibt es auch nicht?
+Machen sie mit uns ganz zwanglos die ersten Schritte mit einem Smartphone am Beispiel von Android-Handys. Lernen Sie, wie Sie die Oberfl&#228;che anpassen k&#246;nnen und welche Funktion Apps, Widgets und der Google Play Store haben.
+Da alle &#220;bungen auf dem eigenen Smartphone gemacht werden, bringen Sie am besten auch das Ladekabel mit.</text>
+        </text>
+        <text>
+            <eigenschaft>Zusatzinformation</eigenschaft>
+            <text>Voraussetzung(en): neben eigenem Android-Smartphone, keine</text>
+        </text>
+        <veranstaltungsort>
+            <name>Haus der Volkshochschule</name>
+            <adresse>
+                <land>Deutschland</land>
+                <plz>13597</plz>
+                <ort>Berlin</ort>
+                <strasse>Carl-Schurz-Str. 17</strasse>
+            </adresse>
+            <barrierefrei>true</barrierefrei>
+        </veranstaltungsort>
+        <preis>
+            <betrag>45.60</betrag>
+            <rabatt_moeglich>true</rabatt_moeglich>
+            <zusatz>erm. Preis: 24,80 EUR</zusatz>
+        </preis>
+        <webadresse>
+            <typ>website</typ>
+            <name>zur Kursbuchung</name>
+            <uri>http://www.vhsit.berlin.de/VHSKURSE/BusinessPages/CourseDetail.aspx?id=569060</uri>
+        </webadresse>
+        <buchung>
+
+        </buchung>    
+    </veranstaltung>

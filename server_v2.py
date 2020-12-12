@@ -1,0 +1,167 @@
+""" 
+B1 websocket server
+"""
+
+# TODO: 
+# pip install flask
+# pip install flask_cors (to get rid of cors https://stackoverflow.com/questions/20035101/why-does-my-javascript-code-receive-a-no-access-control-allow-origin-header-i)
+# pip install pandas
+# pip install flask_restx (for automatic documentation etc.)
+# pip install xmltodict
+
+
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from flask import Flask, json, request, jsonify, Blueprint, render_template # https://stackovetrflow.com/questions/49964340/geting-flask-json-response-as-an-html-table
+from flask_restx import Api, Resource, fields
+from flask_cors import CORS, cross_origin
+
+import pandas as pd  
+import lxml.etree as et
+import os
+import sys
+import helper
+import logging 
+
+from json import dumps
+
+# logger
+#logging.basicConfig(level=logging.DEBUG)
+
+xml = os.path.join(sys.path[0], 'data/kurse.xml')  #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
+schema = os.path.join(sys.path[0], 'data/kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
+request_schema = os.path.join(sys.path[0], 'data/request.xsd')  
+
+# server
+app = Flask(__name__)
+#CORS(app, resources={r"/*": {"origins": "*"}})
+bp = Blueprint('api', __name__, url_prefix='/api/')
+api = Api(bp)
+app.register_blueprint(bp)
+
+
+# parse course and return json
+def find_all_courses():
+  tree = et.parse(xml)
+  root = tree.getroot()
+  rows = []
+
+  request = json_string = '{"key1": null, "guid": "578633"}'
+
+  try:
+      # parse elements and write to json
+      for elem in root:
+        
+        # index.append(elem.find('guid').text)
+        rows.append({ "guid":elem.find('guid').text, "number": elem.find('nummer').text, 
+                      "name": elem.find('name').text, "subtitle": elem.find('untertitel').text 
+                    })
+      #print(parsed)
+  except IOError:
+    print("I/O error")
+  
+  return rows
+
+# parse course and return json with concrete course
+def find_course(request):
+  rows = []
+  search_elem = None
+  search_value = None
+  tree = et.parse(xml)
+  root = tree.getroot()
+  # create dict to parse
+  #json_dictionary = json.loads(request)  
+  print(request)
+  # search element and value from request  
+  for key, value in request.items():
+    print(key, value)
+    if value != None:
+      # build path for query
+      path = helper.path_constructor_elem(key, value)
+
+  try:
+    # parse all found elements
+    for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
+      for dept in targ.xpath('ancestor-or-self::veranstaltung'):
+        rows.append({ "guid":dept.find('guid').text, "number": dept.find('nummer').text, 
+                        "name": dept.find('name').text, "subtitle": dept.find('untertitel').text 
+                      })
+  except IOError:
+    print("I/O error")
+                                                                           
+  print(rows)
+  return rows
+
+model_all = api.model('Courses', {
+  'guid': fields.Integer,
+  'number': fields.String,
+  'name': fields.String(default='Course_name'),
+  'subtitle': fields.String,
+  'category': fields.Float,
+  'min_members': fields.Integer,
+  'max_members': fields.Integer,
+  'appointments': fields.Integer,
+  'begin_date': fields.Date,
+  'end_date': fields.Date,
+  'keywords': fields.List(fields.String),
+  'target_audience': fields.String,
+  'location': fields.Nested(
+    api.model('Location', {
+      'name': fields.String,
+      'country': fields.String,
+      'zipcode': fields.String,
+      'region': fields.String,
+      'street': fields.String
+    })
+  ),
+  'price': fields.Nested(
+    api.model('Price', {
+      'amount': fields.Float,
+      'discount_possible': fields.Boolean,
+      'price_reduced': fields.String
+    })
+  ),
+  'web': fields.Nested(
+    api.model('Webadress', {
+      'type': fields.String,
+      'name': fields.String,
+      'uri': fields.String,
+    })
+  )
+})
+
+model_courses = api.model('Courses', {
+  'guid': fields.Integer,
+  'number': fields.String,
+  'name': fields.String(default='Course_name'),
+  'subtitle': fields.String,
+})
+
+@api.route('/courses')
+class Courses(Resource):
+
+  @api.doc('find_all_courses')
+  @api.marshal_list_with(model_courses)
+  def get(self):
+    #print(all_courses())
+    response = jsonify(find_all_courses())
+    print(response)
+    return response.get_json(), 200
+
+@api.route('/search')
+@api.response(404, "Not found")
+class Courses(Resource):
+
+  @api.doc('find_course')
+  @api.marshal_list_with(model_courses)
+  def post(self):
+    data = request.get_json()
+    print(data)
+    response = jsonify(find_course(data))
+    return response.get_json(), 201
+
+@app.route('/')
+def index():
+  return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)

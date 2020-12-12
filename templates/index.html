@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+      <title>Kursenverwaltung</title>
+      <!-- jQuery import -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <!-- Styles -->
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+      <!-- Datatables plugin -->
+      <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.22/datatables.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.22/datatables.min.css"/>
+      <!-- Main script -->
+      <script type="text/javascript" src="{{ url_for('static', filename='/script/index.js') }}"></script>
+  </head>	
+  <body>
+    <h2>Kursenverwaltung</h2>
+
+    <button class="ui-accordion-button">Suche</button>
+
+    <div class="ui-search-panel">
+      <div class="ui-seach-fields">
+        <select id="element_selection">
+          <option value="guid">Guid</input>
+          <option value="number">Nummer</input>
+          <option value="name">Name</input>
+          <option value="keywords">Stichwort</input>
+        </select>
+        <input id="search_input" type="text"></input>
+        <button class="ui-button" type="button" onclick="searchCourse($('#search_input')[0].value)">Suchen</button>
+        <button class="ui-button" type="button" onclick="receiveAllCourses()">Zurück zu allen Kursen</button>
+      </div>
+
+      <div class="ui-search-info">Bitte wählen Sie das Element und tragen Suchbegriff ein</div>
+    </div>
+      
+    </div>
+      <div>
+          <table id="table" class="display" style="text-align: center"></table>
+              
+          </table>
+          <!-- Get table data -->
+          <script>receiveAllCourses()</script>
+      </div>
+      
+      <script type="text/javascript" src="{{ url_for('static', filename='/script/accordion.js') }}"></script>
+      <!-- Get rid of "Synchronous XMLHttpRequest on the main thread is deprecated" message https://stackoverflow.com/questions/24639335/javascript-console-log-causes-error-synchronous-xmlhttprequest-on-the-main-thr -->
+      <script>$.ajaxPrefilter(function( options, originalOptions, jqXHR ) { options.async = true; });</script>
+  </body>
+
+</html>
