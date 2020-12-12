@@ -33,3 +33,7 @@
 .ui-search-info {
   width: 50%;
 }
+
+.ui-course-info {
+  white-space: pre-line;
+}

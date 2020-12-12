@@ -55,7 +55,7 @@ def find_all_courses():
         rows.append({ "guid":elem.find('guid').text, "number": elem.find('nummer').text, 
                       "name": elem.find('name').text, "subtitle": elem.find('untertitel').text 
                     })
-      #print(parsed)
+
   except IOError:
     print("I/O error")
   
@@ -68,22 +68,39 @@ def find_course(request):
   search_value = None
   tree = et.parse(xml)
   root = tree.getroot()
-  # create dict to parse
-  #json_dictionary = json.loads(request)  
+  search_key = None
+
   print(request)
   # search element and value from request  
   for key, value in request.items():
-    print(key, value)
     if value != None:
       # build path for query
-      path = helper.path_constructor_elem(key, value)
+      if key == 'diverse':
+        # TODO: bug, finds entry two times 
+        path = helper.path_constructor_divers(value)
+      else:
+        search_key = key
+        search_key = 'nummer' if (key == 'number') else search_key
+        search_key = 'untertitel' if (key == 'subtitle') else search_key
+        search_key = 'schlagwort' if (key == 'keywords') else search_key  
+        path = helper.path_constructor_elem(search_key, value)
 
   try:
     # parse all found elements
     for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
       for dept in targ.xpath('ancestor-or-self::veranstaltung'):
-        rows.append({ "guid":dept.find('guid').text, "number": dept.find('nummer').text, 
-                        "name": dept.find('name').text, "subtitle": dept.find('untertitel').text 
+
+        rows.append({ 'guid':dept.find('guid').text, 'number': dept.find('nummer').text, 
+                      'name': dept.find('name').text, 'subtitle': dept.find('untertitel').text,
+                      'category': dept.find('dvv_kategorie').text, 'min_members': dept.find('minimale_teilnehmerzahl').text,
+                      'max_members': dept.find('maximale_teilnehmerzahl').text, 'appointments': dept.find('anzahl_termine').text,
+                      'begin_date': dept.find('beginn_datum').text, 'end_date': dept.find('ende_datum').text,
+                      'target_audience': dept.find('zielgruppe').text, 'keywords': dept.find('schlagwort').text,
+                      'location': { 'name': dept.find('veranstaltungsort/name').text, 'country': dept.find('veranstaltungsort/adresse/land').text, 
+                      'zipcode': dept.find('veranstaltungsort/adresse/plz').text, 'region': dept.find('veranstaltungsort/adresse/ort').text, 
+                      'street': dept.find('veranstaltungsort/adresse/strasse').text, 'barrier_free': dept.find('veranstaltungsort/barrierefrei').text },
+                      'price': { 'amount': dept.find('preis/betrag').text, 'discount_possible': dept.find('preis/rabatt_moeglich').text, 'price_reduced': dept.find('preis/zusatz').text },
+                      'web': { 'type': dept.find('webadresse/typ').text, 'name': 'webadresse/name', 'uri': dept.find('webadresse/uri').text }
                       })
   except IOError:
     print("I/O error")
@@ -91,7 +108,7 @@ def find_course(request):
   print(rows)
   return rows
 
-model_all = api.model('Courses', {
+model_all = api.model('test', {
   'guid': fields.Integer,
   'number': fields.String,
   'name': fields.String(default='Course_name'),
@@ -102,7 +119,6 @@ model_all = api.model('Courses', {
   'appointments': fields.Integer,
   'begin_date': fields.Date,
   'end_date': fields.Date,
-  'keywords': fields.List(fields.String),
   'target_audience': fields.String,
   'location': fields.Nested(
     api.model('Location', {
@@ -126,10 +142,10 @@ model_all = api.model('Courses', {
       'name': fields.String,
       'uri': fields.String,
     })
-  )
+  ),
 })
 
-model_courses = api.model('Courses', {
+model_reduced = api.model('Courses_reduced', {
   'guid': fields.Integer,
   'number': fields.String,
   'name': fields.String(default='Course_name'),
@@ -140,11 +156,10 @@ model_courses = api.model('Courses', {
 class Courses(Resource):
 
   @api.doc('find_all_courses')
-  @api.marshal_list_with(model_courses)
+  @api.marshal_list_with(model_reduced)
   def get(self):
     #print(all_courses())
     response = jsonify(find_all_courses())
-    print(response)
     return response.get_json(), 200
 
 @api.route('/search')
@@ -152,10 +167,9 @@ class Courses(Resource):
 class Courses(Resource):
 
   @api.doc('find_course')
-  @api.marshal_list_with(model_courses)
+  @api.marshal_list_with(model_all)
   def post(self):
     data = request.get_json()
-    print(data)
     response = jsonify(find_course(data))
     return response.get_json(), 201
 
