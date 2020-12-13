@@ -25,7 +25,7 @@ import logging
 from json import dumps
 
 # logger
-#logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 
 xml = os.path.join(sys.path[0], 'data/kurse.xml')  #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'data/kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
@@ -33,7 +33,7 @@ request_schema = os.path.join(sys.path[0], 'data/request.xsd')
 
 # server
 app = Flask(__name__)
-#CORS(app, resources={r"/*": {"origins": "*"}})
+# use blueprints to avoid CORS errors (Nikolai's advice)
 bp = Blueprint('api', __name__, url_prefix='/api/')
 api = Api(bp)
 app.register_blueprint(bp)
@@ -45,15 +45,22 @@ def find_all_courses():
   root = tree.getroot()
   rows = []
 
-  request = json_string = '{"key1": null, "guid": "578633"}'
-
   try:
-      # parse elements and write to json
-      for elem in root:
-        
-        # index.append(elem.find('guid').text)
-        rows.append({ "guid":elem.find('guid').text, "number": elem.find('nummer').text, 
-                      "name": elem.find('name').text, "subtitle": elem.find('untertitel').text 
+    # parse elements and write to json
+    for dept in root:
+
+      # index.append(elem.find('guid').text)
+      rows.append({ 'guid':dept.find('guid').text, 'number': dept.find('nummer').text, 
+                    'name': dept.find('name').text, 'subtitle': dept.find('untertitel').text,
+                    'category': dept.find('dvv_kategorie').text, 'min_members': dept.find('minimale_teilnehmerzahl').text,
+                    'max_members': dept.find('maximale_teilnehmerzahl').text, 'appointments': dept.find('anzahl_termine').text,
+                    'begin_date': dept.find('beginn_datum').text, 'end_date': dept.find('ende_datum').text,
+                    'target_audience': dept.find('zielgruppe').text, 'keywords': { 'keyword': kw.text for kw in dept.findall('schlagwort') },
+                    'location': { 'name': dept.find('veranstaltungsort/name').text, 'country': dept.find('veranstaltungsort/adresse/land').text, 
+                    'zipcode': dept.find('veranstaltungsort/adresse/plz').text, 'region': dept.find('veranstaltungsort/adresse/ort').text, 
+                    'street': dept.find('veranstaltungsort/adresse/strasse').text, 'barrier_free': dept.find('veranstaltungsort/barrierefrei').text },
+                    'price': { 'amount': dept.find('preis/betrag').text, 'discount_possible': dept.find('preis/rabatt_moeglich').text, 'price_reduced': dept.find('preis/zusatz').text },
+                    'web': { 'type': dept.find('webadresse/typ').text, 'name': 'webadresse/name', 'uri': dept.find('webadresse/uri').text }
                     })
 
   except IOError:
@@ -76,7 +83,7 @@ def find_course(request):
     if value != None:
       # build path for query
       if key == 'diverse':
-        # TODO: bug, finds entry two times 
+        # TODO: bug, finds entry two times
         path = helper.path_constructor_divers(value)
       else:
         search_key = key
@@ -89,13 +96,14 @@ def find_course(request):
     # parse all found elements
     for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
       for dept in targ.xpath('ancestor-or-self::veranstaltung'):
-
+        for kw in dept.findall('schlagwort'):
+          print({'keyword': kw.text}) 
         rows.append({ 'guid':dept.find('guid').text, 'number': dept.find('nummer').text, 
                       'name': dept.find('name').text, 'subtitle': dept.find('untertitel').text,
                       'category': dept.find('dvv_kategorie').text, 'min_members': dept.find('minimale_teilnehmerzahl').text,
                       'max_members': dept.find('maximale_teilnehmerzahl').text, 'appointments': dept.find('anzahl_termine').text,
                       'begin_date': dept.find('beginn_datum').text, 'end_date': dept.find('ende_datum').text,
-                      'target_audience': dept.find('zielgruppe').text, 'keywords': dept.find('schlagwort').text,
+                      'target_audience': dept.find('zielgruppe').text, 'keywords': { 'keyword': kw.text for kw in dept.findall('schlagwort') }, #TODO: KEYWORDS
                       'location': { 'name': dept.find('veranstaltungsort/name').text, 'country': dept.find('veranstaltungsort/adresse/land').text, 
                       'zipcode': dept.find('veranstaltungsort/adresse/plz').text, 'region': dept.find('veranstaltungsort/adresse/ort').text, 
                       'street': dept.find('veranstaltungsort/adresse/strasse').text, 'barrier_free': dept.find('veranstaltungsort/barrierefrei').text },
@@ -108,7 +116,7 @@ def find_course(request):
   print(rows)
   return rows
 
-model_all = api.model('test', {
+model_all = api.model('Model', {
   'guid': fields.Integer,
   'number': fields.String,
   'name': fields.String(default='Course_name'),
@@ -120,6 +128,11 @@ model_all = api.model('test', {
   'begin_date': fields.Date,
   'end_date': fields.Date,
   'target_audience': fields.String,
+  'keywords': fields.Nested(
+    api.model('Keywords', {
+      'keyword': fields.String,
+    })
+  ),
   'location': fields.Nested(
     api.model('Location', {
       'name': fields.String,
@@ -156,7 +169,7 @@ model_reduced = api.model('Courses_reduced', {
 class Courses(Resource):
 
   @api.doc('find_all_courses')
-  @api.marshal_list_with(model_reduced)
+  @api.marshal_list_with(model_all)
   def get(self):
     #print(all_courses())
     response = jsonify(find_all_courses())

@@ -9,6 +9,11 @@ function receiveAllCourses() {
     success: function(response) {
     
       buildTable(response);
+      // event handler for the row
+      $('#table tbody').on('click', 'tr', function () {
+        var data = table.row( this ).data();
+        printCourseInfo(data);
+      } );
     }
   });
 }
@@ -42,6 +47,11 @@ function searchCourse(input) {
     success: function(response) {
       
       buildTable(response);
+      // event handler for the row
+      $('#table tbody').on('click', 'tr', function () {
+        var data = table.row( this ).data();
+        printCourseInfo(data);
+      } );
     }
   });
 }
@@ -61,39 +71,14 @@ function buildTable(dataSet) {
     ],
     "oLanguage": { "sSearch": "Filtern"}
   } );
-
-  // event handler for the row
-  $('#table tbody').on('click', 'tr', function () {
-      var data = table.row( this ).data();
-      console.log( data );
-      printInfo(data);
-    } );
 }
 
 
-function printInfo(data) {
-  var request = {
-    'diverse': null,
-    'guid': data['guid'],
-    'number': null,
-    'name': null,
-    'subtitle': null,
-    'keywords': null
-  }
+function printCourseInfo(data) {
 
-  jQuery.ajax({
-    type: "POST",
-    url: "http://localhost:5000/api/search",
-    data: JSON.stringify(request),
-    contentType: 'application/json; charset=utf-8',
-    dataType: "json",
-    async: false,
-    success: function(response) {
-      console.log(response)
-      $('#course_info').text(`Guid: ${response[0]['guid']} Nummer: ${response[0]['number']} 
-                          Name: ${response[0]['name']} Untertitel: ${response[0]['subtitle']}
-                          Kategorie: ${response[0]['category']} Min. Teilnehmer: ${response[0]['min_members']} Max. Teilnehmer: ${response['max_members']}` );
-    }
-  });
-
+      $('#course_info').text(
+          `Guid: ${data['guid']} Nummer: ${data['number']} 
+           Name: ${data['name']} Untertitel: ${data['subtitle']}
+           Kategorie: ${data['category']} Min. Teilnehmer: ${data['min_members']} Max. Teilnehmer: ${data['max_members']}` 
+         );
 }
