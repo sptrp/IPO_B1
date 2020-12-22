@@ -48,13 +48,13 @@ function searchCourse(dataSet) {
 
   var element = $("#element_selection")[0].value;
 
-  console.log(request)
   for (var elem in request) {
     if (elem == element) {
       request[elem] = dataSet
     }
   }
-
+  
+  // build AJAX request
   jQuery.ajax({
     type: "POST",
     url: "http://localhost:5000/api/search",
@@ -102,7 +102,7 @@ function bookCourse() {
     'subtitle': null,
     'keywords': null
   }
-
+  // build AJAX request
   jQuery.ajax({
     type: "POST",
     url: "http://localhost:5000/api/book",
@@ -173,7 +173,7 @@ function sendLoginRequest() {
     'username': document.getElementById("login_username").value,
     'password': passwordHash.toString(CryptoJS.enc.Hex)
   } 
-
+  // build AJAX request
   jQuery.ajax({
     type: "POST",
     url: "http://localhost:5000/api/login",
@@ -205,7 +205,7 @@ function sendLoggedInRequest() {
     'username': null,
     'password': null
   } 
-
+  // build AJAX request
   jQuery.ajax({
     type: "POST",
     url: "http://localhost:5000/api/login",
@@ -231,7 +231,7 @@ function sendLogoutRequest() {
     'username': null,
     'password': null
   } 
-
+  // build AJAX request
   jQuery.ajax({
     type: "POST",
     url: "http://localhost:5000/api/login",
@@ -267,7 +267,7 @@ function sendRegisterRequest() {
     'email': document.getElementById("register_email").value,
     'password': passwordHash.toString(CryptoJS.enc.Hex)
   } 
-  console.log(request)
+  // build AJAX request
   jQuery.ajax({
     type: "POST",
     url: "http://localhost:5000/api/register",
@@ -292,7 +292,7 @@ function sendMyBookingsRequest() {
     'keywords': null,
     'bookings': 'true'
   }
-
+  // build AJAX request
   jQuery.ajax({
     type: "POST",
     url: "http://localhost:5000/api/search",
@@ -325,7 +325,7 @@ function sendMyBookingsRequest() {
  * Function to get profile data
  */
 function getProfileData() {
-
+  // build AJAX request
   jQuery.ajax({
     type: "GET",
     url: "http://localhost:5000/api/profile",
@@ -353,6 +353,7 @@ function hideMenuButtons() {
     loginBtn.style.display = "none";
     logoutBtn.style.display = "block";
     profileBtn.style.display = "block";
+
   } else {
     console.log('logged out')
     loginBtn.style.display = "block";
@@ -362,7 +363,7 @@ function hideMenuButtons() {
 }
 
 /**
- * Function to prevent empty registrierung (http://jsbin.com/niyibufebo/3/edit?html,js,console,output)
+ * Function to prevent empty sign up (http://jsbin.com/niyibufebo/3/edit?html,js,console,output)
  */
 function checkForm() {
   var elements = document.forms[0].elements;
@@ -392,7 +393,6 @@ function openLogin() {
 }
 
 function openProfile(data) {
-  console.log(data)
   $('#profile_modal').modal('show');
 
   $('.profile-username').text(`Nutzername: ${data['username']}`);
