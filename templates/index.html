@@ -18,13 +18,13 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js" integrity="sha512-nOQuvD9nKirvxDdvQ9OMqe2dgapbPB7vYAMrzJihw5m+aNcf0dX53m6YxM4LgA9u8e9eg9QX+/+mPu8kCNpV2A==" crossorigin="anonymous"></script>
   </head>	
   <body>
-
+      <!-- Navigation bar -->
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Kursenverwaltung</a>
         <ul class="navbar-nav">
           <button id= "login_button" class="btn btn-outline-success login" type="button" onclick="openLogin()">Einloggen</button>
-          <button id= "profile_button" class="btn btn-primary profile" type="button" data-bs-toggle="modal" data-bs-target="#profile_modal">Profil</button>
-          <button id= "logout_button" class="btn btn-danger logout" type="button" onclick="sendLogoutRequest()">Ausloggen</button>
+          <button id= "profile_button" class="btn btn-primary profile" type="button" onclick="openProfile()">Profil</button>
+          <button id= "logout_button" class="btn btn-danger logout" type="button" onclick="openLogout()">Ausloggen</button>
         </ul>
       </nav>
 
@@ -56,7 +56,7 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="staticBackdropLabel">Einloggen</h5>
+              <h5 class="modal-title">Einloggen</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -68,15 +68,45 @@
           </div>
         </div>
       </div>
+
+      <div class="modal" id="logout_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Ausloggen</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Wollen Sie sich wirklich ausloggen?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" onclick="sendLogoutRequest()">Ausloggen</button>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <div id="profile_modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Kurs Information</h5>
+              <h5 class="modal-title">Profil und Einstellungen</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-           
+            <div class="modal-body course-info">
+              <div class="card">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item profile-username"></li>
+                  <li class="list-group-item profile-name"></li>
+                  <li class="list-group-item profile-surname"></li>
+                  <li class="list-group-item profile-street"></li>
+                  <li class="list-group-item profile-postcode"></li>
+                  <li class="list-group-item profile-city"></li>
+                  <li class="list-group-item profile-country"></li>
+                  <li class="list-group-item profile-mail"></li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>

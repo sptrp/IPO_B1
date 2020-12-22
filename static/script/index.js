@@ -78,7 +78,6 @@ function searchCourse(dataSet) {
           table.$('tr.selected').removeClass('selected');
           $(this).addClass('selected');
           data = table.row( this ).data();
-          $('#course_info_modal').modal('show');
           showCourseInfo();
         }
       } );
@@ -131,6 +130,8 @@ function buildTable(dataSet) {
 
 
 function showCourseInfo() {
+    $('#course_info_modal').modal('show');
+
     $('.info-guid').text(`Guid: ${data['guid']}`);
     $('.info-number').text(`Nummer: ${data['number']}`);
     $('.info-name').text(`Name: ${data['name']}`);
@@ -140,6 +141,19 @@ function showCourseInfo() {
     $('.info-maxmembers').text(`Max. Teilnehmer: ${data['max_members']}`);
     $('.info-keywords').text(`Schlagwörter: ${data['keywords']}`);
     console.log(data['keywords'])
+}
+
+function openProfile() {
+  $('#profile_modal').modal('show');
+
+  $('.profile-username').text(`Nutzername: ${data['guid']}`);
+  $('.profile-name').text(`Vorname: ${data['number']}`);
+  $('.profile-surname').text(`Nachname: ${data['name']}`);
+  $('.profile-street').text(`Strasse: ${data['subtitle']}`);
+  $('.profile-postcode').text(`PLZ: ${data['category']}`);
+  $('.profile-city').text(`Ort: ${data['min_members']}`);
+  $('.profile-country').text(`Land: ${data['max_members']}`);
+  $('.profile-mail').text(`Mail: ${data['keywords']}`);
 }
 
 function sendLoginRequest() {
@@ -158,11 +172,14 @@ function sendLoginRequest() {
     dataType: "json",
     async: false,
     success: function(response) { 
+      console.log(response)
       $('#login_modal').modal('hide');
       client_id = response['id'];
+      location.reload();
      }
   });
 }
+
 
 function sendLogoutRequest() {
 
@@ -182,6 +199,8 @@ function sendLogoutRequest() {
     success: function(response) { 
       console.log(response)
       $('#login_modal').modal('hide')
+      client_id = undefined;
+      location.reload();
      }
   });
 }
@@ -214,6 +233,12 @@ function sendRegisterRequest() {
       $('#register_modal').modal('hide')
      }
   });
+}
+
+
+
+function openLogout() {
+  $('#logout_modal').modal('show');
 }
 
 function openRegister() {
