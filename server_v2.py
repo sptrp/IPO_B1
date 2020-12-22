@@ -1,10 +1,10 @@
 """ 
 B2 websocket server
+Ivan Ponomarev, Stefan Holzbauer
 """
 
 # TODO: 
 # pip install flask
-# pip install flask_cors (to get rid of cors https://stackoverflow.com/questions/20035101/why-does-my-javascript-code-receive-a-no-access-control-allow-origin-header-i)
 # pip install pandas
 # pip install flask_restx (for automatic documentation etc.)
 # pip install xmltodict
@@ -13,12 +13,12 @@ B2 websocket server
 # pip install xmlschema
 # pip install requests
 
+# CHANGE TO B1: changed the used libraries
 from http.server import (HTTPServer, BaseHTTPRequestHandler)
 import functools
 from flask import (Flask, json, request, jsonify, Blueprint, render_template, session)
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_restx import (Api, Resource, fields)
-
 import pandas as pd  
 import lxml.etree as et
 import os
@@ -28,20 +28,17 @@ import logging
 import urllib.request
 import shutil
 from requests import get
-
 from json import dumps
 
-# logger
-# logging.basicConfig(level=logging.DEBUG)
-
-# Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
-schema = os.path.join(sys.path[0], 'data/kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
+# CHANGE TO B1: Added Client XML path
+schema = os.path.join(sys.path[0], 'data/kurse.xsd')    
 ClientXml = os.path.join(sys.path[0], 'data/kunden.xml')
 ClientSchema = os.path.join(sys.path[0], 'data/kunden.xsd')
 request_schema = os.path.join(sys.path[0], 'data/request.xsd')  
 xml = os.path.join(sys.path[0], 'data/kurse.xml')
 url = 'https://vhsit.berlin.de/VHSKURSE/OpenData/Kurse.xml'
 
+# CHANGE TO B1: Added Flask
 # server
 app = Flask(__name__)
 # use blueprints to avoid CORS errors (Nikolai's advice)
@@ -50,10 +47,12 @@ api = Api(bp)
 app.register_blueprint(bp)
 app.secret_key = 'some secret key'
 
+# CHANGE TO B1: Check for Kurse.xml and ability do update
 #check xml file
 yes = {'yes','y', 'ye', 'ja','j','jo'}
 no = {'no','n','nein','ne','nö'}
 
+# check if data/Kurse.xml exists and posibility to update
 if os.path.isfile('data/kurse.xml'):
   print ("Kurse.xml found in data/")
   print ("Do you want update the file?")
@@ -68,12 +67,13 @@ if os.path.isfile('data/kurse.xml'):
     print('Server uses short version from subfolder data/')
 else:
   print("Could not find Kurse.xml")
+
+# CHANGE TO B1:
 # parse client and return json with concrete client
 def find_client(id):
   rows = []
   tree = et.parse(ClientXml)
   root = tree.getroot()
-
   path = helper.path_constructor_parentnode(id)
 
   try:
@@ -97,6 +97,7 @@ def find_client(id):
                                                                            
   return rows
 
+# CHANGE TO B1:
 # parse client and return json with concrete client
 def find_client_data(request):
   rows = []
@@ -109,7 +110,7 @@ def find_client_data(request):
 
   try:
     for targ in root.xpath(path): 
-      print('found: %s' % targ)# https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
+      print('found: %s' % targ)
       for dept in targ.xpath('ancestor-or-self::kunde'):
         if request['password'] == dept.find('kennwort').text:
           rows.append({ 
@@ -130,6 +131,7 @@ def find_client_data(request):
                                                                                                                                              
   return rows
 
+# CHANGE TO B1: XML and csv replaced with json
 # parse course and return json
 def find_all_courses():
   tree = et.parse(xml)
@@ -160,7 +162,7 @@ def find_all_courses():
     print("I/O error")
   
   return rows
-
+# CHANGE TO B1:
 # parse course and return json with concrete course
 def find_course(request):
   rows = []
@@ -188,7 +190,7 @@ def find_course(request):
 
   try:
     # parse all found elements
-    for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
+    for targ in root.xpath(path): 
       for dept in targ.xpath('ancestor-or-self::veranstaltung'):
         keywords = ""
         # combine all Schlagwoerter to one text
@@ -211,7 +213,8 @@ def find_course(request):
     print("I/O error")
                                                                            
   return rows
-
+# CHANGE TO B1:
+# function to create a client
 def register(data):
 
     client_id = '%s' % os.getpid()
@@ -265,9 +268,8 @@ model_reduced = api.model('Courses_reduced', {
   'subtitle': fields.String,
 })
 
-#@api.route('/courses')
-#Alternative: 
-@api.route('/courses', doc={'params':{'Resource': 'The search key and key value'}})
+# route for all course
+@api.route('/courses', doc={'description': "show all coures", 'params':{'Resource': 'input'}})
 class Courses(Resource):
 
   @api.doc('find_all_courses')
@@ -276,7 +278,7 @@ class Courses(Resource):
     response = jsonify(find_all_courses())
     return response.get_json(), 200
 
-@api.route('/search')
+@api.route('/search', doc={'description': "Search course request", 'params':{'Resource': 'JSON-format with key and key value specified'}})
 @api.response(404, "Not found")
 class CourseSearch(Resource):
 
@@ -287,7 +289,7 @@ class CourseSearch(Resource):
     response = jsonify(find_course(data))
     return response.get_json(), 201
     
-@api.route('/profile')
+@api.route('/profile', doc={'description': "Client ID search", 'params':{'Resource': 'JSON-format with id (client id)'}})
 @api.response(404, "Not found")
 class ClientIDSearch(Resource):
 
@@ -300,7 +302,7 @@ class ClientIDSearch(Resource):
       response = { 'status' : 'profile load failed' }
       return response, 401 
 
-@api.route('/book')
+@api.route('/book', doc={'description': "book course", 'params':{'Resource': 'JSON-format with guid'}})
 @api.response(404, "Not found")
 class CourseBook(Resource):
 
@@ -313,7 +315,7 @@ class CourseBook(Resource):
     return response, 201
 
 # sign in
-@api.route('/login')
+@api.route('/login', doc={'description': "for logging in client", 'params':{'Resource': 'JSON-format with username and password'}})
 @api.response(404, "Not found")
 class Login(Resource):
 
@@ -370,7 +372,7 @@ class Login(Resource):
       response = { 'status' : 'authentication failed' }
       return response, 401
 
-@api.route('/register')
+@api.route('/register', doc={'description': "to register client", 'params':{'Resource': 'JSON-format with user information, username and pw mandatory'}})
 @api.response(404, "Not found")
 class Register(Resource):
   def post(self):
