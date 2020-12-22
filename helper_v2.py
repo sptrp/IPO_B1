@@ -79,7 +79,7 @@ def path_constructor_elem(attribute, val):
 
 # path for string in text
 def path_constructor_divers(val):
-  return "//*[contains(text(), '{}')]" .format(val)
+  return "//veranstaltung/*[contains(text(), '{}')]" .format(val)
 
 # path for string in text in specific attribute
 def path_constructor_onlyname(attribute, val):

@@ -25,6 +25,8 @@ import os
 import sys
 import helper_v2 as helper
 import logging 
+import urllib.request
+import shutil
 
 from json import dumps
 
@@ -36,6 +38,7 @@ schema = os.path.join(sys.path[0], 'data/kurse.xsd')         #Damit es unter Lin
 ClientXml = os.path.join(sys.path[0], 'data/kunden.xml')
 ClientSchema = os.path.join(sys.path[0], 'data/kunden.xsd')
 request_schema = os.path.join(sys.path[0], 'data/request.xsd')  
+url = 'http://vhsit.berlin.de/VHSKURSE/OpenData/Kurse.xml'
 
 # server
 app = Flask(__name__)
@@ -45,7 +48,25 @@ api = Api(bp)
 app.register_blueprint(bp)
 app.secret_key = 'some secret key'
 
+#check xml file
+yes = {'yes','y', 'ye', 'ja','j','jo'}
+no = {'no','n','nein','ne','nö'}
+
+if not os.path.isfile('kurse.xml'):
+  print ("Could not find kurse.xml in folder")
+  print ("Do you want to download it (yes/no)?")
+  choice = input().lower()
+  if choice in yes:
+    # Download the file from `url` and save it locally under `file_name`:
+    with urllib.request.urlopen(url) as response, open('kurse.xml', 'wb') as out_file:
+      shutil.copyfileobj(response, out_file)
+    xml = os.path.join(sys.path[0], 'kurse.xml')
+  elif choice in no:
+    print('Server uses short version from subfolder data/')
+    xml = os.path.join(sys.path[0], 'data/kurse.xml')
+
 # parse client and return json with concrete client
+@api.doc('find client info with id',params={'id': 'The Client ID'})
 def find_client(request):
   rows = []
   tree = et.parse(ClientXml)
@@ -122,7 +143,6 @@ def find_course(request):
     if value != None:
       # build path for query
       if key == 'diverse':
-        # TODO: bug, finds entry two times
         path = helper.path_constructor_divers(value)
       else:
         search_key = key
@@ -214,7 +234,9 @@ model_reduced = api.model('Courses_reduced', {
   'subtitle': fields.String,
 })
 
-@api.route('/courses')
+#@api.route('/courses')
+#Alternative: 
+@api.route('/courses', doc={'params':{'Resource': 'The search key and key value'}})
 class Courses(Resource):
 
   @api.doc('find_all_courses')
@@ -235,11 +257,9 @@ class CourseSearch(Resource):
     response = jsonify(find_course(data))
     return response.get_json(), 201
     
-@api.route('/searchClID')
+@api.route('/profile')
 @api.response(404, "Not found")
-class ClientIDSearch(Resource):
-
-  @api.doc('find_client')
+class Profile(Resource):
   def post(self):
     data = request.get_json()
     response = jsonify(find_client(data))
