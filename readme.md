@@ -28,6 +28,7 @@ Zu den Programmen
 - DataTables wurde als Bibliothek für die Tabellenfunktionen genutzt.
 - Die Tabellenfunktionen beinhalten neben der Pagination, die Anzahl der Anzeige, der Header bleibt immer im Sichtfeld auch ein echtzeit Filterfeld (rechtsseitig).
 - Den alten Code aus B1 findet man im Ordner "legacy"
+- Wenn etwas nicht geht, die Seite updaten :)
 
 ---
 Letzte Änderung: 22.12.2020

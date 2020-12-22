@@ -148,7 +148,6 @@ function buildTable(dataSet) {
  */
 function showCourseInfo() {
     $('#course_info_modal').modal('show');
-    console.log(loggedIn)
     loggedIn == true ? $('#book_button').removeAttr("disabled") : $('#book_button').attr("disabled", "disabled");
 
     $('.info-guid').text(`Guid: ${data['guid']}`);
@@ -165,7 +164,6 @@ function showCourseInfo() {
     $('.info-keywords').text(`Schlagwörter: ${data['keywords']}`);
     document.getElementById("link").href = data['web']['uri'];
     document.getElementById("link").text = data['web']['uri'];
-    console.log(data['keywords'])
 }
 
 /**
