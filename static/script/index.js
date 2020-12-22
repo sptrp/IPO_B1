@@ -362,6 +362,19 @@ function hideMenuButtons() {
 }
 
 /**
+ * Function to prevent empty registrierung (http://jsbin.com/niyibufebo/3/edit?html,js,console,output)
+ */
+function checkForm() {
+  var elements = document.forms[0].elements;
+  var indexOfBlank = Array.prototype.findIndex.call(elements, function(element) {
+      return element.tagName.toUpperCase() == 'INPUT' && element.value.length === 0 && (element.id == 'register_username' || element.id == 'register_password');
+  });
+  console.log(indexOfBlank > -1) 
+  document.getElementById("submit_register").disabled = indexOfBlank > -1;
+};
+
+
+/**
  * Functions to control modals
  */
 function openLogout() {
@@ -391,6 +404,4 @@ function openProfile(data) {
   $('.profile-country').text(`Land: ${data['adress']['country']}`);
   $('.profile-mail').text(`Mail: ${data['mail']}`);
 }
-
-
 
