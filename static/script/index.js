@@ -83,7 +83,7 @@ function searchCourse(dataSet) {
           // check if logged in
           sendLoggedInRequest();
           // set delay, cause 2 request is faster
-          setTimeout(function() {showCourseInfo(); }, 500);    
+          setTimeout(function() { showCourseInfo(); }, 500);    
         }
       } );
     }
@@ -201,7 +201,7 @@ function sendLoggedInRequest() {
 
   var request = {
     'type': 'loggedIn',
-    'username': document.getElementById("login_username").value,
+    'username': null,
     'password': null
   } 
 
@@ -281,6 +281,23 @@ function sendRegisterRequest() {
   });
 }
 
+function hideMenuButtons() {
+  
+  var loginBtn = document.getElementById("login_button"); 
+  var logoutBtn = document.getElementById("logout_button"); 
+  var profileBtn = document.getElementById("profile_button"); 
+  if (loggedIn == true) {
+    console.log('logged in')
+    loginBtn.style.display = "none";
+    logoutBtn.style.display = "block";
+    profileBtn.style.display = "block";
+  } else {
+    console.log('logged out')
+    loginBtn.style.display = "block";
+    logoutBtn.style.display = "none";
+    profileBtn.style.display = "none";
+  }
+}
 
 /**
  * Functions to control modals
