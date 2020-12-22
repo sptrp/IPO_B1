@@ -27,7 +27,7 @@
           <button id= "logout_button" class="btn btn-danger logout" type="button" onclick="openLogout()">Ausloggen</button>
         </ul>
       </nav>
-
+      <!-- Registration modal -->
       <div class="modal fade" id="register_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -51,7 +51,7 @@
           </div>
         </div>
       </div>
-
+      <!-- Login modal -->
       <div class="modal fade" id="login_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -68,7 +68,7 @@
           </div>
         </div>
       </div>
-
+      <!-- Logout modal -->
       <div class="modal" id="logout_modal" tabindex="-1" role="dialog">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -85,7 +85,7 @@
           </div>
         </div>
       </div>
-      
+      <!-- Profile modal -->
       <div id="profile_modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
@@ -110,7 +110,7 @@
           </div>
         </div>
       </div>
-
+      <!-- Course info modal -->
       <div id="course_info_modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
@@ -132,11 +132,11 @@
                 </ul>
               </div>
             </div>
-            <button class="btn btn-primary" type="button" onclick="bookCourse()">Buchen</button>
+            <button id="book_button" class="btn btn-primary" type="button" disabled onclick="bookCourse()">Buchen</button>
           </div>
         </div>
       </div>
-
+      <!-- Search -->
       <div class="container-fluid search-container">
         <select id="element_selection">
           <option value="diverse">Überall suchen</option>
@@ -151,7 +151,7 @@
         <button class="btn btn-light" type="button" onclick="receiveAllCourses()">Zurück zu allen Kursen</button>
       </div>
     </div>
-    
+    <!-- Table base -->
     <table id="table" class="display ui-data-table" style="text-align: center; width: 100%"></table>
     </table>
     <!-- Get table data -->

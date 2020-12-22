@@ -1,4 +1,4 @@
-var table, data, client_id;
+var table, data, clientId, loggedIn;
 
 /**
  * Function to receive all courses
@@ -23,8 +23,10 @@ function receiveAllCourses() {
           table.$('tr.selected').removeClass('selected');
           $(this).addClass('selected');
           data = table.row( this ).data();
-          $('#course_info_modal').modal('show');
-          showCourseInfo();
+          // check if logged in
+          sendLoggedInRequest();
+          // set delay, cause 2 request is faster
+          setTimeout(function() {showCourseInfo(); }, 500);        
         }
       } );
     }
@@ -78,7 +80,10 @@ function searchCourse(dataSet) {
           table.$('tr.selected').removeClass('selected');
           $(this).addClass('selected');
           data = table.row( this ).data();
-          showCourseInfo();
+          // check if logged in
+          sendLoggedInRequest();
+          // set delay, cause 2 request is faster
+          setTimeout(function() {showCourseInfo(); }, 500);    
         }
       } );
     }
@@ -110,7 +115,9 @@ function bookCourse() {
 
 }
 
-
+/**
+ * Function to build the data table
+ */
 function buildTable(dataSet) {
   table ? table.destroy() : void(0);
   table = $('#table').DataTable( {
@@ -128,9 +135,13 @@ function buildTable(dataSet) {
   } );
 }
 
-
+/**
+ * Function to show course info
+ */
 function showCourseInfo() {
     $('#course_info_modal').modal('show');
+    console.log(loggedIn)
+    loggedIn == true ? $('#book_button').removeAttr("disabled") : $('#book_button').attr("disabled", "disabled");
 
     $('.info-guid').text(`Guid: ${data['guid']}`);
     $('.info-number').text(`Nummer: ${data['number']}`);
@@ -143,6 +154,9 @@ function showCourseInfo() {
     console.log(data['keywords'])
 }
 
+/**
+ * Function to show profile
+ */
 function openProfile() {
   $('#profile_modal').modal('show');
 
@@ -156,6 +170,9 @@ function openProfile() {
   $('.profile-mail').text(`Mail: ${data['keywords']}`);
 }
 
+/**
+ * Function to send login request
+ */
 function sendLoginRequest() {
 
   var request = {
@@ -174,13 +191,38 @@ function sendLoginRequest() {
     success: function(response) { 
       console.log(response)
       $('#login_modal').modal('hide');
-      client_id = response['id'];
+      clientId = response['id'];
       location.reload();
      }
   });
 }
 
+function sendLoggedInRequest() {
 
+  var request = {
+    'type': 'loggedIn',
+    'username': document.getElementById("login_username").value,
+    'password': null
+  } 
+
+  jQuery.ajax({
+    type: "POST",
+    url: "http://localhost:5000/api/login",
+    data: JSON.stringify(request),
+    contentType: 'application/json; charset=utf-8',
+    dataType: "json",
+    async: false,
+    success: function(response) { 
+      console.log(response['status'] == 'logged in');
+      response['status'] == 'logged in' ? loggedIn = true : loggedIn = false;
+      console.log(loggedIn);
+     }
+  });
+}
+
+/**
+ * Function to send logout request
+ */
 function sendLogoutRequest() {
 
   var request = {
@@ -199,12 +241,16 @@ function sendLogoutRequest() {
     success: function(response) { 
       console.log(response)
       $('#login_modal').modal('hide')
-      client_id = undefined;
+      clientId = undefined;
+      loggedIn = false;
       location.reload();
      }
   });
 }
 
+/**
+ * Function to send register request
+ */
 function sendRegisterRequest() {
 
   passwordHash = CryptoJS.SHA256(document.getElementById("register_password").value);
@@ -236,7 +282,9 @@ function sendRegisterRequest() {
 }
 
 
-
+/**
+ * Functions to control modals
+ */
 function openLogout() {
   $('#logout_modal').modal('show');
 }

@@ -67,7 +67,6 @@ def xml_trimmer_mybooks(tree):
         elem.getparent().remove(elem)  
 
   return tree
-
   
 # path for all booked coursed
 def path_constructor_book(val):

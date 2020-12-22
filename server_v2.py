@@ -218,6 +218,7 @@ class Login(Resource):
   def post(self):
     data = request.get_json()
 
+    # logout
     if data['type'] == 'logout':
       if len(session) > 0:
         session.clear()
@@ -227,8 +228,20 @@ class Login(Resource):
         response = { 'status' : 'logout failed' }
         return response, 401
 
+    # check if logged in
+    if data['type'] == 'loggedIn':
+      if len(session) > 0:
+        if data['username'] in session['user_id']:
+          response = { 'status' : 'logged in' }
+          return response, 200
+        response = { 'status' : 'logged out' }
+        return response, 200 
+      else: 
+        response = { 'status' : 'logged out' }
+        return response, 200
+
+    # login
     elif data['type'] == 'login': 
-      print(data)
       username = data['username']
       password = data['password']
       error = None
@@ -245,9 +258,11 @@ class Login(Resource):
         print('Logged in')
         session.clear()
         session['user_id'] = default_user['id']
+        # build response if login success
         response = { 'status' : 'success', 'id':  session['user_id']}
         return response, 200
-
+        
+      # build response if login failed
       response = { 'status' : 'authentication failed' }
       return response, 401
 
