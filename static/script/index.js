@@ -155,22 +155,6 @@ function showCourseInfo() {
 }
 
 /**
- * Function to show profile
- */
-function openProfile() {
-  $('#profile_modal').modal('show');
-
-  $('.profile-username').text(`Nutzername: ${data['guid']}`);
-  $('.profile-name').text(`Vorname: ${data['number']}`);
-  $('.profile-surname').text(`Nachname: ${data['name']}`);
-  $('.profile-street').text(`Strasse: ${data['subtitle']}`);
-  $('.profile-postcode').text(`PLZ: ${data['category']}`);
-  $('.profile-city').text(`Ort: ${data['min_members']}`);
-  $('.profile-country').text(`Land: ${data['max_members']}`);
-  $('.profile-mail').text(`Mail: ${data['keywords']}`);
-}
-
-/**
  * Function to send login request
  */
 function sendLoginRequest() {
@@ -194,7 +178,12 @@ function sendLoginRequest() {
       $('#login_modal').modal('hide');
       clientId = response['id'];
       location.reload();
-     }
+     },
+    statusCode: {
+      401: function() {
+        alert( "Falsche Daten" );
+      }
+    }
   });
 }
 
@@ -291,8 +280,8 @@ function getProfileData() {
     dataType: "json",
     async: false,
     success: function(response) { 
-      console.log(response)
-  
+      data = response[0];
+      openProfile(data);
      }
   });
 }
@@ -331,5 +320,23 @@ function openLogin() {
   $('#register_modal').modal('hide');
   $('#login_modal').modal('show');
 }
+
+/**
+ * Function to show profile
+ */
+function openProfile(data) {
+  console.log(data)
+  $('#profile_modal').modal('show');
+
+  $('.profile-username').text(`Nutzername: ${data['username']}`);
+  $('.profile-name').text(`Vorname: ${data['firstname']}`);
+  $('.profile-surname').text(`Nachname: ${data['lastname']}`);
+  $('.profile-street').text(`Strasse: ${data['adress']['street']}`);
+  $('.profile-postcode').text(`PLZ: ${data['adress']['zipcode']}`);
+  $('.profile-city').text(`Ort: ${data['adress']['city']}`);
+  $('.profile-country').text(`Land: ${data['adress']['country']}`);
+  $('.profile-mail').text(`Mail: ${data['mail']}`);
+}
+
 
 

@@ -315,26 +315,30 @@ class Login(Resource):
     # login
     elif data['type'] == 'login':
       db_response = find_client_data(data)
-      print("db response: %s" % db_response)
-      username = db_response[0]['username']
-      password = db_response[0]['password']
-      id = db_response[0]['id']
-      error = None
+      
+      if len(db_response) == 0:
+        response = { 'status' : 'authentication failed' }
+        return response, 401
+      else:  
+        username = db_response[0]['username']
+        password = db_response[0]['password']
+        id = db_response[0]['id']
+        error = None
 
-      # false data
-      if data['username'] not in username:
-          error = 'Incorrect username.'
-      elif data['password'] not in password:
-          error = 'Incorrect password.'
+        # false data
+        if data['username'] not in username:
+            error = 'Incorrect username.'
+        elif data['password'] not in password:
+            error = 'Incorrect password.'
 
-      if error is None:
-        print('Logged in')
-        session.clear()
-        session['user_id'] = id
-        # build response if login success
-        response = { 'status' : 'success', 'id':  session['user_id']}
-        return response, 200
-      # build response if login failed
+        if error is None:
+          print('Logged in')
+          session.clear()
+          session['user_id'] = id
+          # build response if login success
+          response = { 'status' : 'success', 'id':  session['user_id']}
+          return response, 200
+        # build response if login failed
       response = { 'status' : 'authentication failed' }
       return response, 401
 
