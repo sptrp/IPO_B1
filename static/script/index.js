@@ -1,9 +1,9 @@
-var table, data, client_id;
+var table, my_course_table, data, clientId, loggedIn;
 
 /**
  * Function to receive all courses
  */
-function receiveAllCourses() { 
+function getAllCourses() { 
   jQuery.ajax({
     type: "GET",
     url: "http://localhost:5000/api/courses",
@@ -23,8 +23,10 @@ function receiveAllCourses() {
           table.$('tr.selected').removeClass('selected');
           $(this).addClass('selected');
           data = table.row( this ).data();
-          $('#course_info_modal').modal('show');
-          showCourseInfo();
+          // check if logged in
+          sendLoggedInRequest();
+          // set delay, cause 2 request is faster
+          setTimeout(function() {showCourseInfo(); }, 500);        
         }
       } );
     }
@@ -78,8 +80,10 @@ function searchCourse(dataSet) {
           table.$('tr.selected').removeClass('selected');
           $(this).addClass('selected');
           data = table.row( this ).data();
-          $('#course_info_modal').modal('show');
-          showCourseInfo();
+          // check if logged in
+          sendLoggedInRequest();
+          // set delay, cause 2 request is faster
+          setTimeout(function() { showCourseInfo(); }, 500);    
         }
       } );
     }
@@ -106,12 +110,22 @@ function bookCourse() {
     contentType: 'application/json; charset=utf-8',
     dataType: "json",
     async: false,
-    success: function(response) { console.log(response) } 
+    success: function(response) {
+      console.log('Booking response: ', response) 
+    },
+    statusCode: {
+      201: function() {
+        $('#course_info_modal').modal('hide'); 
+        alert( "Kurs gebucht!" );
+      }
+    } 
   });
 
 }
 
-
+/**
+ * Function to build the data table
+ */
 function buildTable(dataSet) {
   table ? table.destroy() : void(0);
   table = $('#table').DataTable( {
@@ -129,8 +143,14 @@ function buildTable(dataSet) {
   } );
 }
 
-
+/**
+ * Function to show course info
+ */
 function showCourseInfo() {
+    $('#course_info_modal').modal('show');
+    console.log(loggedIn)
+    loggedIn == true ? $('#book_button').removeAttr("disabled") : $('#book_button').attr("disabled", "disabled");
+
     $('.info-guid').text(`Guid: ${data['guid']}`);
     $('.info-number').text(`Nummer: ${data['number']}`);
     $('.info-name').text(`Name: ${data['name']}`);
@@ -142,12 +162,16 @@ function showCourseInfo() {
     console.log(data['keywords'])
 }
 
+/**
+ * Function to send login request
+ */
 function sendLoginRequest() {
-
+  passwordHash = CryptoJS.SHA256(document.getElementById("login_password").value);
+  console.log(passwordHash.toString(CryptoJS.enc.Hex))
   var request = {
     'type': 'login',
     'username': document.getElementById("login_username").value,
-    'password': document.getElementById("login_password").value
+    'password': passwordHash.toString(CryptoJS.enc.Hex)
   } 
 
   jQuery.ajax({
@@ -158,12 +182,48 @@ function sendLoginRequest() {
     dataType: "json",
     async: false,
     success: function(response) { 
+      console.log(response)
       $('#login_modal').modal('hide');
-      client_id = response['id'];
+      clientId = response['id'];
+      location.reload();
+     },
+    statusCode: {
+      401: function() {
+        alert( "Falsche Daten" );
+      }
+    }
+  });
+}
+
+/**
+ * Function to send request if logged in 
+ */
+function sendLoggedInRequest() {
+
+  var request = {
+    'type': 'loggedIn',
+    'username': null,
+    'password': null
+  } 
+
+  jQuery.ajax({
+    type: "POST",
+    url: "http://localhost:5000/api/login",
+    data: JSON.stringify(request),
+    contentType: 'application/json; charset=utf-8',
+    dataType: "json",
+    async: false,
+    success: function(response) { 
+      console.log(response['status'] == 'logged in');
+      response['status'] == 'logged in' ? loggedIn = true : loggedIn = false;
+      console.log(loggedIn);
      }
   });
 }
 
+/**
+ * Function to send logout request
+ */
 function sendLogoutRequest() {
 
   var request = {
@@ -182,10 +242,16 @@ function sendLogoutRequest() {
     success: function(response) { 
       console.log(response)
       $('#login_modal').modal('hide')
+      clientId = undefined;
+      loggedIn = false;
+      location.reload();
      }
   });
 }
 
+/**
+ * Function to send register request
+ */
 function sendRegisterRequest() {
 
   passwordHash = CryptoJS.SHA256(document.getElementById("register_password").value);
@@ -216,6 +282,92 @@ function sendRegisterRequest() {
   });
 }
 
+function sendMyBookingsRequest() {
+  var request = {
+    'diverse': null,
+    'guid': null,
+    'number': null,
+    'name': null,
+    'subtitle': null,
+    'keywords': null,
+    'bookings': 'true'
+  }
+
+  jQuery.ajax({
+    type: "POST",
+    url: "http://localhost:5000/api/search",
+    data: JSON.stringify(request),
+    contentType: 'application/json; charset=utf-8',
+    dataType: "json",
+    async: false,
+    success: function(response) {
+     console.log(response);
+     // build my booking table
+     my_course_table ? my_course_table.destroy() : void(0);
+     my_course_table = $('#my_course_table').DataTable( {
+      responsive: true,
+      data: response,
+      select: false,
+      paging: false,
+      searching: false,
+      scrollY: 200,
+      "columns": [
+        { title: "Guid", "data": "guid" },
+        { title: "Nummer", "data": "number" },
+        { title: "Name", "data": "name" },
+        { title: "Untertitel", "data": "subtitle" }
+      ] } );
+    }
+  });
+}
+
+/**
+ * Function to get profile data
+ */
+function getProfileData() {
+
+  jQuery.ajax({
+    type: "GET",
+    url: "http://localhost:5000/api/profile",
+    contentType: 'application/json; charset=utf-8',
+    dataType: "json",
+    async: false,
+    success: function(response) { 
+      data = response[0];
+      openProfile(data);
+      sendMyBookingsRequest();
+     }
+  });
+}
+
+/**
+ * Function to hide buttons if logged in/out
+ */
+function hideMenuButtons() {
+  
+  var loginBtn = document.getElementById("login_button"); 
+  var logoutBtn = document.getElementById("logout_button"); 
+  var profileBtn = document.getElementById("profile_button"); 
+  if (loggedIn == true) {
+    console.log('logged in')
+    loginBtn.style.display = "none";
+    logoutBtn.style.display = "block";
+    profileBtn.style.display = "block";
+  } else {
+    console.log('logged out')
+    loginBtn.style.display = "block";
+    logoutBtn.style.display = "none";
+    profileBtn.style.display = "none";
+  }
+}
+
+/**
+ * Functions to control modals
+ */
+function openLogout() {
+  $('#logout_modal').modal('show');
+}
+
 function openRegister() {
   $('#login_modal').modal('hide'); 
   $('#register_modal').modal('show');
@@ -225,5 +377,20 @@ function openLogin() {
   $('#register_modal').modal('hide');
   $('#login_modal').modal('show');
 }
+
+function openProfile(data) {
+  console.log(data)
+  $('#profile_modal').modal('show');
+
+  $('.profile-username').text(`Nutzername: ${data['username']}`);
+  $('.profile-name').text(`Vorname: ${data['firstname']}`);
+  $('.profile-surname').text(`Nachname: ${data['lastname']}`);
+  $('.profile-street').text(`Strasse: ${data['adress']['street']}`);
+  $('.profile-postcode').text(`PLZ: ${data['adress']['zipcode']}`);
+  $('.profile-city').text(`Ort: ${data['adress']['city']}`);
+  $('.profile-country').text(`Land: ${data['adress']['country']}`);
+  $('.profile-mail').text(`Mail: ${data['mail']}`);
+}
+
 
 

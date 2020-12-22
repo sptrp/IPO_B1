@@ -69,15 +69,17 @@ if not os.path.isfile('kurse.xml'):
     xml = os.path.join(sys.path[0], 'data/kurse.xml')
 
 # parse client and return json with concrete client
+<<<<<<< HEAD
 @api.doc('find client info with id',params={'id': 'The Client ID'})
 def find_client(request):
+=======
+def find_client(id):
+>>>>>>> B2
   rows = []
   tree = et.parse(ClientXml)
   root = tree.getroot()
 
-  for key, value in request.items():
-    if key == 'id':
-      path = helper.path_constructor_parentnode(value)
+  path = helper.path_constructor_parentnode(id)
 
   try:
     # parse all (should be 1) found elements
@@ -98,7 +100,39 @@ def find_client(request):
   except IOError:
     print("I/O error")
                                                                            
-  print(rows)
+  return rows
+
+# parse client and return json with concrete client
+def find_client_data(request):
+  rows = []
+  tree = et.parse(ClientXml)
+  root = tree.getroot()
+
+  for key, value in request.items():
+    if key == 'username':
+      path = helper.path_constructor_client_username(value)
+
+  try:
+    for targ in root.xpath(path): 
+      print('found: %s' % targ)# https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
+      for dept in targ.xpath('ancestor-or-self::kunde'):
+        if request['password'] == dept.find('kennwort').text:
+          rows.append({ 
+                        'id':dept.find('id').text,
+                        'username':dept.find('username').text,
+                        'firstname':dept.find('vorname').text,
+                        'lastname': dept.find('nachname').text,
+                        'adress': {
+                          'street': dept.find('adresse/strasse').text,
+                          'zipcode': dept.find('adresse/plz').text,
+                          'city': dept.find('adresse/ort').text,
+                          'country': dept.find('adresse/land').text },
+                        'mail': dept.find('mail').text,
+                        'password': dept.find('kennwort').text,
+                      })
+  except IOError:
+    print("I/O error")
+                                                                                                                                             
   return rows
 
 # parse course and return json
@@ -152,7 +186,10 @@ def find_course(request):
         search_key = 'nummer' if (key == 'number') else search_key
         search_key = 'untertitel' if (key == 'subtitle') else search_key
         search_key = 'schlagwort' if (key == 'keywords') else search_key  
-        path = helper.path_constructor_elem(search_key, value)
+        if key == 'bookings':
+          path = helper.path_constructor_book(session['user_id'])
+        else:   
+          path = helper.path_constructor_elem(search_key, value)
 
   try:
     # parse all found elements
@@ -178,19 +215,15 @@ def find_course(request):
   except IOError:
     print("I/O error")
                                                                            
-  print(rows)
   return rows
 
 def register(data):
-  
 
     client_id = '%s' % os.getpid()
-    print(client_id)
     helper.create_kundenxml(client_id, data['username'], data['name'], data['surname'], 
                             data['street'], data['postcode'], data['city'], 
                             data['country'], data['email'], data['password'])
     return {'status': 'success', 'id': client_id}
-
 
 model_all = api.model('Model', {
   'guid': fields.Integer,
@@ -245,7 +278,6 @@ class Courses(Resource):
   @api.doc('find_all_courses')
   @api.marshal_list_with(model_all)
   def get(self):
-    #print(all_courses())
     response = jsonify(find_all_courses())
     return response.get_json(), 200
 
@@ -262,11 +294,24 @@ class CourseSearch(Resource):
     
 @api.route('/profile')
 @api.response(404, "Not found")
+<<<<<<< HEAD
 class Profile(Resource):
   def post(self):
     data = request.get_json()
     response = jsonify(find_client(data))
     return response.get_json(), 201
+=======
+class ClientIDSearch(Resource):
+
+  @api.doc('get_client_data')
+  def get(self):
+    try:
+      response = jsonify(find_client(session['user_id']))
+      return response.get_json(), 201
+    except Exception:
+      response = { 'status' : 'profile load failed' }
+      return response, 401 
+>>>>>>> B2
 
 @api.route('/book')
 @api.response(404, "Not found")
@@ -277,7 +322,8 @@ class CourseBook(Resource):
   def post(self):
     data = request.get_json()
     helper.add_kunde_to_course(data['guid'], session['user_id'])
-    return "test", 201
+    response = { 'status' : 'booking success' }
+    return response, 201
 
 # sign in
 @api.route('/login')
@@ -288,6 +334,7 @@ class Login(Resource):
   def post(self):
     data = request.get_json()
 
+    # logout
     if data['type'] == 'logout':
       if len(session) > 0:
         session.clear()
@@ -297,27 +344,42 @@ class Login(Resource):
         response = { 'status' : 'logout failed' }
         return response, 401
 
-    elif data['type'] == 'login': 
-      print(data)
-      username = data['username']
-      password = data['password']
-      error = None
-      default_user = {'username' : 'test', 'password' : '1234', 'id' : '12345'}
-
-      # false data
-      if default_user['username'] not in username:
-          error = 'Incorrect username.'
-      #elif not check_password_hash(default_user['password'], password):
-      elif default_user['password'] not in password:
-          error = 'Incorrect password.'
-
-      if error is None:
-        print('Logged in')
-        session.clear()
-        session['user_id'] = default_user['id']
-        response = { 'status' : 'success', 'id':  session['user_id']}
+    # check if logged in
+    if data['type'] == 'loggedIn':
+      if len(session) > 0:
+          response = { 'status' : 'logged in' }
+          return response, 200
+      else: 
+        response = { 'status' : 'logged out' }
         return response, 200
 
+    # login
+    elif data['type'] == 'login':
+      db_response = find_client_data(data)
+      
+      if len(db_response) == 0:
+        response = { 'status' : 'authentication failed' }
+        return response, 401
+      else:  
+        username = db_response[0]['username']
+        password = db_response[0]['password']
+        id = db_response[0]['id']
+        error = None
+
+        # false data
+        if data['username'] not in username:
+            error = 'Incorrect username.'
+        elif data['password'] not in password:
+            error = 'Incorrect password.'
+
+        if error is None:
+          print('Logged in')
+          session.clear()
+          session['user_id'] = id
+          # build response if login success
+          response = { 'status' : 'success', 'id':  session['user_id']}
+          return response, 200
+        # build response if login failed
       response = { 'status' : 'authentication failed' }
       return response, 401
 

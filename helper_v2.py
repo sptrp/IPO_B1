@@ -42,10 +42,6 @@ def add_kunde_to_course(guid, client_id):
   addbuchung = ET.SubElement(find, 'buchungid')
   addbuchung.text = client_id
   tree.write(os.path.join(sys.path[0], 'data/kurse.xml'), encoding="utf-8", xml_declaration=True)
-  if xml_validator_file(os.path.join(sys.path[0], 'data/kurse.xml'),os.path.join(sys.path[0], 'kurse.xsd')):
-    print("Erfolgreich validiert")
-  else:
-    print("Fehler beim Validieren!")
 
 # 'Guid', 'Nummer', 'Name', 'Untertitel'
 def xml_trimmer(tree):
@@ -67,7 +63,6 @@ def xml_trimmer_mybooks(tree):
         elem.getparent().remove(elem)  
 
   return tree
-
   
 # path for all booked coursed
 def path_constructor_book(val):
@@ -88,12 +83,7 @@ def path_constructor_onlyname(attribute, val):
 def path_constructor_parentnode(client_id):
   return "//kunde[id='{}']" .format(client_id)
 
-# validator for incoming xml  
-def xml_validator_file(input, schema):
+def path_constructor_client_username(client_username):
+  print("//kunde[username='{}']" .format(client_username))
+  return "//kunde[username='{}']" .format(client_username)
 
-    xml = ET.parse(input)
-    xsd = xmlschema.XMLSchema(schema)
-
-    result = xsd.is_valid(xml)
-
-    return result
