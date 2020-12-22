@@ -1,4 +1,4 @@
-var table, data, clientId, loggedIn;
+var table, my_course_table, data, clientId, loggedIn;
 
 /**
  * Function to receive all courses
@@ -110,7 +110,15 @@ function bookCourse() {
     contentType: 'application/json; charset=utf-8',
     dataType: "json",
     async: false,
-    success: function(response) { console.log(response) } 
+    success: function(response) {
+      console.log('Booking response: ', response) 
+    },
+    statusCode: {
+      201: function() {
+        $('#course_info_modal').modal('hide'); 
+        alert( "Kurs gebucht!" );
+      }
+    } 
   });
 
 }
@@ -187,6 +195,9 @@ function sendLoginRequest() {
   });
 }
 
+/**
+ * Function to send request if logged in 
+ */
 function sendLoggedInRequest() {
 
   var request = {
@@ -271,6 +282,48 @@ function sendRegisterRequest() {
   });
 }
 
+function sendMyBookingsRequest() {
+  var request = {
+    'diverse': null,
+    'guid': null,
+    'number': null,
+    'name': null,
+    'subtitle': null,
+    'keywords': null,
+    'bookings': 'true'
+  }
+
+  jQuery.ajax({
+    type: "POST",
+    url: "http://localhost:5000/api/search",
+    data: JSON.stringify(request),
+    contentType: 'application/json; charset=utf-8',
+    dataType: "json",
+    async: false,
+    success: function(response) {
+     console.log(response);
+     // build my booking table
+     my_course_table ? my_course_table.destroy() : void(0);
+     my_course_table = $('#my_course_table').DataTable( {
+      responsive: true,
+      data: response,
+      select: false,
+      paging: false,
+      searching: false,
+      scrollY: 200,
+      "columns": [
+        { title: "Guid", "data": "guid" },
+        { title: "Nummer", "data": "number" },
+        { title: "Name", "data": "name" },
+        { title: "Untertitel", "data": "subtitle" }
+      ] } );
+    }
+  });
+}
+
+/**
+ * Function to get profile data
+ */
 function getProfileData() {
 
   jQuery.ajax({
@@ -282,10 +335,14 @@ function getProfileData() {
     success: function(response) { 
       data = response[0];
       openProfile(data);
+      sendMyBookingsRequest();
      }
   });
 }
 
+/**
+ * Function to hide buttons if logged in/out
+ */
 function hideMenuButtons() {
   
   var loginBtn = document.getElementById("login_button"); 
@@ -321,9 +378,6 @@ function openLogin() {
   $('#login_modal').modal('show');
 }
 
-/**
- * Function to show profile
- */
 function openProfile(data) {
   console.log(data)
   $('#profile_modal').modal('show');

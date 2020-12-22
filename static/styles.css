@@ -1,3 +1,32 @@
 .search-container {
   margin-top: 4%;
 }
+
+.my-info {
+  font-size: smaller;
+}
+
+.modal-dialog, .modal-lg {
+  max-width: 1200px !important;
+}
+
+.my-course-data-table {
+  font-size: smaller;
+}
+
+.navbar-brand {
+  margin-left: 5%; 
+}
+
+.navbar-expand-lg {
+  /*justify-content: space-between !important;*/
+}
+
+.my-bookings-header {
+  margin-top: 2%;
+  font-weight: bold;
+}
+
+.btn {
+  margin-left: 10%;
+}

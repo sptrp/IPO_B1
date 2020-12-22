@@ -159,7 +159,10 @@ def find_course(request):
         search_key = 'nummer' if (key == 'number') else search_key
         search_key = 'untertitel' if (key == 'subtitle') else search_key
         search_key = 'schlagwort' if (key == 'keywords') else search_key  
-        path = helper.path_constructor_elem(search_key, value)
+        if key == 'bookings':
+          path = helper.path_constructor_book(session['user_id'])
+        else:   
+          path = helper.path_constructor_elem(search_key, value)
 
   try:
     # parse all found elements
@@ -282,7 +285,8 @@ class CourseBook(Resource):
   def post(self):
     data = request.get_json()
     helper.add_kunde_to_course(data['guid'], session['user_id'])
-    return "test", 201
+    response = { 'status' : 'booking success' }
+    return response, 201
 
 # sign in
 @api.route('/login')
