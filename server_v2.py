@@ -1,5 +1,5 @@
 """ 
-B1 websocket server
+B2 websocket server
 """
 
 # TODO: 
@@ -8,6 +8,9 @@ B1 websocket server
 # pip install pandas
 # pip install flask_restx (for automatic documentation etc.)
 # pip install xmltodict
+# pip install lxml
+# pip install configupdater
+# pip install xmlschema
 
 
 from http.server import (HTTPServer, BaseHTTPRequestHandler)
@@ -30,6 +33,8 @@ from json import dumps
 
 xml = os.path.join(sys.path[0], 'data/kurse.xml')  #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'data/kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
+ClientXml = os.path.join(sys.path[0], 'data/kunden.xml')
+ClientSchema = os.path.join(sys.path[0], 'data/kunden.xsd')
 request_schema = os.path.join(sys.path[0], 'data/request.xsd')  
 
 # server
@@ -40,6 +45,37 @@ api = Api(bp)
 app.register_blueprint(bp)
 app.secret_key = 'some secret key'
 
+# parse client and return json with concrete client
+def find_client(request):
+  rows = []
+  tree = et.parse(ClientXml)
+  root = tree.getroot()
+
+  for key, value in request.items():
+    if key == 'id':
+      path = helper.path_constructor_parentnode(value)
+
+  try:
+    # parse all (should be 1) found elements
+    for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
+      #for dept in targ.xpath('ancestor-or-self::kunde'):
+        rows.append({ 
+                      'id':targ.find('id').text,
+                      'username':targ.find('username').text,
+                      'firstname':targ.find('vorname').text,
+                      'lastname': targ.find('nachname').text,
+                      'adress': {
+                        'street': targ.find('adresse/strasse').text,
+                        'zipcode': targ.find('adresse/plz').text,
+                        'city': targ.find('adresse/ort').text,
+                        'country': targ.find('adresse/land').text },
+                      'mail': targ.find('mail').text,
+                    })
+  except IOError:
+    print("I/O error")
+                                                                           
+  print(rows)
+  return rows
 
 # parse course and return json
 def find_all_courses():
@@ -100,6 +136,7 @@ def find_course(request):
     for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
       for dept in targ.xpath('ancestor-or-self::veranstaltung'):
         keywords = ""
+        # combine all Schlagwoerter to one text
         for kw in dept.findall('schlagwort'):
           keywords = keywords + kw.text + " "
 
@@ -196,6 +233,16 @@ class CourseSearch(Resource):
   def post(self):
     data = request.get_json()
     response = jsonify(find_course(data))
+    return response.get_json(), 201
+    
+@api.route('/searchClID')
+@api.response(404, "Not found")
+class ClientIDSearch(Resource):
+
+  @api.doc('find_client')
+  def post(self):
+    data = request.get_json()
+    response = jsonify(find_client(data))
     return response.get_json(), 201
 
 @api.route('/book')
