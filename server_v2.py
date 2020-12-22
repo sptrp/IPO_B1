@@ -69,12 +69,7 @@ if not os.path.isfile('kurse.xml'):
     xml = os.path.join(sys.path[0], 'data/kurse.xml')
 
 # parse client and return json with concrete client
-<<<<<<< HEAD
-@api.doc('find client info with id',params={'id': 'The Client ID'})
-def find_client(request):
-=======
 def find_client(id):
->>>>>>> B2
   rows = []
   tree = et.parse(ClientXml)
   root = tree.getroot()
@@ -294,13 +289,6 @@ class CourseSearch(Resource):
     
 @api.route('/profile')
 @api.response(404, "Not found")
-<<<<<<< HEAD
-class Profile(Resource):
-  def post(self):
-    data = request.get_json()
-    response = jsonify(find_client(data))
-    return response.get_json(), 201
-=======
 class ClientIDSearch(Resource):
 
   @api.doc('get_client_data')
@@ -311,7 +299,6 @@ class ClientIDSearch(Resource):
     except Exception:
       response = { 'status' : 'profile load failed' }
       return response, 401 
->>>>>>> B2
 
 @api.route('/book')
 @api.response(404, "Not found")
