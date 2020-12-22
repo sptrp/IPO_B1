@@ -27,7 +27,7 @@ Zu den Programmen
 - Als CSS Bibliothek wurde Bootstrap benutzt.
 - DataTables wurde als Bibliothek für die Tabellenfunktionen genutzt.
 - Die Tabellenfunktionen beinhalten neben der Pagination, die Anzahl der Anzeige, der Header bleibt immer im Sichtfeld auch ein echtzeit Filterfeld (rechtsseitig).
-
+- Den alten Code aus B1 findet man im Ordner "legacy"
 
 ---
 Letzte Änderung: 22.12.2020

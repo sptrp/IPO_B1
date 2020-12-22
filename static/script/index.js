@@ -158,7 +158,13 @@ function showCourseInfo() {
     $('.info-category').text(`Kategorie: ${data['category']}`);
     $('.info-minmembers').text(`Min. Teilnehmer: ${data['min_members']}`);
     $('.info-maxmembers').text(`Max. Teilnehmer: ${data['max_members']}`);
+    $('.info-beginn').text(`Beginndatum: ${data['begin_date']}`);
+    $('.info-end').text(`Enddatum: ${data['end_date']}`);
+    $('.info-audience').text(`Zielgruppe: ${data['target_audience']}`);
+    $('.info-price').text(`Preis: ${data['price']['amount']}€`);
     $('.info-keywords').text(`Schlagwörter: ${data['keywords']}`);
+    document.getElementById("link").href = data['web']['uri'];
+    document.getElementById("link").text = data['web']['uri'];
     console.log(data['keywords'])
 }
 
