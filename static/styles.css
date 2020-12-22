@@ -6,7 +6,7 @@
   font-size: smaller;
 }
 
-.modal-dialog, .modal-lg {
+.modal-lg {
   max-width: 1200px !important;
 }
 
