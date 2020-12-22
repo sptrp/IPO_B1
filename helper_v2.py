@@ -83,3 +83,7 @@ def path_constructor_onlyname(attribute, val):
 def path_constructor_parentnode(client_id):
   return "//kunde[id='{}']" .format(client_id)
 
+def path_constructor_client_username(client_username):
+  print("//kunde[username='{}']" .format(client_username))
+  return "//kunde[username='{}']" .format(client_username)
+

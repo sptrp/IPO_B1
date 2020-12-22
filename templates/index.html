@@ -24,7 +24,7 @@
         <a class="navbar-brand" href="#">Kursenverwaltung</a>
         <ul class="navbar-nav">
           <button id= "login_button" class="btn btn-outline-success login" type="button" onclick="openLogin()">Einloggen</button>
-          <button id= "profile_button" class="btn btn-primary profile" type="button" onclick="openProfile()">Profil</button>
+          <button id= "profile_button" class="btn btn-primary profile" type="button" onclick="getProfileData()">Profil</button>
           <button id= "logout_button" class="btn btn-danger logout" type="button" onclick="openLogout()">Ausloggen</button>
         </ul>
       </nav>
@@ -149,14 +149,14 @@
         </select>
         <input id="search_input" type="text"></input>
         <button class="btn btn-dark" type="button" onclick="searchCourse($('#search_input')[0].value)">Suchen</button>
-        <button class="btn btn-light" type="button" onclick="receiveAllCourses()">Zurück zu allen Kursen</button>
+        <button class="btn btn-light" type="button" onclick="getAllCourses()">Zurück zu allen Kursen</button>
       </div>
     </div>
     <!-- Table base -->
     <table id="table" class="display ui-data-table" style="text-align: center; width: 100%"></table>
     </table>
     <!-- Get table data -->
-    <script>receiveAllCourses()</script>
+    <script>getAllCourses()</script>
     <!-- Get rid of "Synchronous XMLHttpRequest on the main thread is deprecated" message https://stackoverflow.com/questions/24639335/javascript-console-log-causes-error-synchronous-xmlhttprequest-on-the-main-thr -->
     <script>$.ajaxPrefilter(function( options, originalOptions, jqXHR ) { options.async = true; });</script>
     <script>hideMenuButtons()</script>

@@ -3,7 +3,7 @@ var table, data, clientId, loggedIn;
 /**
  * Function to receive all courses
  */
-function receiveAllCourses() { 
+function getAllCourses() { 
   jQuery.ajax({
     type: "GET",
     url: "http://localhost:5000/api/courses",
@@ -278,6 +278,21 @@ function sendRegisterRequest() {
     success: function(response) { 
       console.log(response)
       $('#register_modal').modal('hide')
+     }
+  });
+}
+
+function getProfileData() {
+
+  jQuery.ajax({
+    type: "GET",
+    url: "http://localhost:5000/api/profile",
+    contentType: 'application/json; charset=utf-8',
+    dataType: "json",
+    async: false,
+    success: function(response) { 
+      console.log(response)
+  
      }
   });
 }
