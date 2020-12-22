@@ -11,7 +11,7 @@ B2 websocket server
 # pip install lxml
 # pip install configupdater
 # pip install xmlschema
-
+# pip install requests
 
 from http.server import (HTTPServer, BaseHTTPRequestHandler)
 import functools
@@ -27,18 +27,19 @@ import helper_v2 as helper
 import logging 
 import urllib.request
 import shutil
+from requests import get
 
 from json import dumps
 
 # logger
 # logging.basicConfig(level=logging.DEBUG)
 
-xml = os.path.join(sys.path[0], 'data/kurse.xml')  #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
+# Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'data/kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
 ClientXml = os.path.join(sys.path[0], 'data/kunden.xml')
 ClientSchema = os.path.join(sys.path[0], 'data/kunden.xsd')
 request_schema = os.path.join(sys.path[0], 'data/request.xsd')  
-url = 'http://vhsit.berlin.de/VHSKURSE/OpenData/Kurse.xml'
+url = 'https://vhsit.berlin.de/VHSKURSE/OpenData/Kurse.xml'
 
 # server
 app = Flask(__name__)
@@ -57,9 +58,11 @@ if not os.path.isfile('kurse.xml'):
   print ("Do you want to download it (yes/no)?")
   choice = input().lower()
   if choice in yes:
-    # Download the file from `url` and save it locally under `file_name`:
-    with urllib.request.urlopen(url) as response, open('kurse.xml', 'wb') as out_file:
-      shutil.copyfileobj(response, out_file)
+    with open('kurse.xml', "wb") as file:
+      # get request
+      response = get(url)
+      # write to file
+      file.write(response.content)
     xml = os.path.join(sys.path[0], 'kurse.xml')
   elif choice in no:
     print('Server uses short version from subfolder data/')

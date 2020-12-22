@@ -7,3 +7,5 @@ __pycache_
 .DS_Store
 __pycache__
 api
+kurse.xml
+kurse_orig.xml
