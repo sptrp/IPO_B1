@@ -59,3 +59,7 @@
   display: flex;
   justify-content: space-between;
 }
+
+.register-fields {
+  display: grid;
+}
