@@ -9,13 +9,14 @@ import xml.etree.ElementTree as ET
  
 
 #create xml kunden file
-def create_kundenxml(client_id, vorname, nachname, strasse, plz, ort, land, mail, kennwort):
+def create_kundenxml(client_id, username, vorname, nachname, strasse, plz, ort, land, mail, kennwort):
   xml_kunde = os.path.join(sys.path[0], 'data/kunden.xml') 
   tree = etree.parse(xml_kunde)
   root = tree.getroot()
-  
+  print('creating')
   new = E.kunde(
       E.id(client_id),
+      E.username(username),
       E.vorname(vorname),
       E.nachname(nachname),
       E.adresse (

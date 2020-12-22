@@ -7,6 +7,7 @@
               <xs:complexType>
                     <xs:sequence>
                         <xs:element name="id" type="xs:string" />
+                        <xs:element name="username" type="xs:string" />
                         <xs:element name="vorname">
                           <xs:simpleType>
                               <xs:restriction base="xs:string">
@@ -28,6 +29,7 @@
                         <xs:element name="nummer" type="xs:string" />
                         <xs:element name="mail" type="xs:string" minOccurs="0" maxOccurs="1" />
                         <xs:element  name="kurse" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
+                        <xs:element name="password" type="xs:string" />
                     </xs:sequence>
               </xs:complexType>
           </xs:element>

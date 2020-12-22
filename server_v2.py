@@ -122,15 +122,15 @@ def find_course(request):
   return rows
 
 def register(data):
-  try:
-    helper.create_kundenxml(data['username'], data['name'], data['surname'], 
+  
+
+    client_id = '%s' % os.getpid()
+    print(client_id)
+    helper.create_kundenxml(client_id, data['username'], data['name'], data['surname'], 
                             data['street'], data['postcode'], data['city'], 
                             data['country'], data['email'], data['password'])
-    return 'register success'
-  except Exception:
-    print("Registration error")
+    return {'status': 'success', 'id': client_id}
 
-  return 'registration failed'
 
 model_all = api.model('Model', {
   'guid': fields.Integer,

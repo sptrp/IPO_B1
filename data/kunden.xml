@@ -2,6 +2,7 @@
 <kunden>
   <kunde>
     <id>11201</id>
+    <username>Test</username>
     <vorname>Max</vorname>
     <nachname>Muster</nachname>
     <adresse>
@@ -10,9 +11,9 @@
       <ort>Berlin</ort>
       <land>Deutschland</land>
     </adresse>
-    <nummer>0304755213</nummer>
     <mail>abc@ab.ab</mail>
     <kurse>578841</kurse>
     <kurse>569306</kurse>
+    <kennwort>test</kennwort>
   </kunde>
 </kunden>
