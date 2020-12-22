@@ -39,6 +39,7 @@ schema = os.path.join(sys.path[0], 'data/kurse.xsd')         #Damit es unter Lin
 ClientXml = os.path.join(sys.path[0], 'data/kunden.xml')
 ClientSchema = os.path.join(sys.path[0], 'data/kunden.xsd')
 request_schema = os.path.join(sys.path[0], 'data/request.xsd')  
+xml = os.path.join(sys.path[0], 'data/kurse.xml')
 url = 'https://vhsit.berlin.de/VHSKURSE/OpenData/Kurse.xml'
 
 # server
@@ -53,21 +54,20 @@ app.secret_key = 'some secret key'
 yes = {'yes','y', 'ye', 'ja','j','jo'}
 no = {'no','n','nein','ne','nö'}
 
-if not os.path.isfile('kurse.xml'):
-  print ("Could not find kurse.xml in folder")
-  print ("Do you want to download it (yes/no)?")
+if os.path.isfile('data/kurse.xml'):
+  print ("Kurse.xml found in data/")
+  print ("Do you want update the file?")
   choice = input().lower()
   if choice in yes:
-    with open('kurse.xml', "wb") as file:
+    with open('data/kurse.xml', "wb") as file:
       # get request
       response = get(url)
       # write to file
       file.write(response.content)
-    xml = os.path.join(sys.path[0], 'kurse.xml')
   elif choice in no:
     print('Server uses short version from subfolder data/')
-    xml = os.path.join(sys.path[0], 'data/kurse.xml')
-
+else:
+  print("Could not find Kurse.xml")
 # parse client and return json with concrete client
 def find_client(id):
   rows = []
@@ -221,16 +221,16 @@ def register(data):
     return {'status': 'success', 'id': client_id}
 
 model_all = api.model('Model', {
-  'guid': fields.Integer,
+  'guid': fields.String,
   'number': fields.String,
   'name': fields.String(default='Course_name'),
   'subtitle': fields.String,
-  'category': fields.Float,
-  'min_members': fields.Integer,
-  'max_members': fields.Integer,
-  'appointments': fields.Integer,
-  'begin_date': fields.Date,
-  'end_date': fields.Date,
+  'category': fields.String,
+  'min_members': fields.String,
+  'max_members': fields.String,
+  'appointments': fields.String,
+  'begin_date': fields.String,
+  'end_date': fields.String,
   'target_audience': fields.String,
   'keywords': fields.String,
   'location': fields.Nested(
