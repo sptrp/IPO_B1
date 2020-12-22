@@ -1,4 +1,4 @@
-var table, data;
+var table, data, client_id;
 
 /**
  * Function to receive all courses
@@ -159,6 +159,7 @@ function sendLoginRequest() {
     async: false,
     success: function(response) { 
       $('#login_modal').modal('hide');
+      client_id = response['id'];
      }
   });
 }
@@ -187,6 +188,8 @@ function sendLogoutRequest() {
 
 function sendRegisterRequest() {
 
+  passwordHash = CryptoJS.SHA256(document.getElementById("register_password").value);
+
   var request = {
     'username': document.getElementById("register_username").value,
     'name': document.getElementById("register_name").value,
@@ -196,9 +199,9 @@ function sendRegisterRequest() {
     'city': document.getElementById("register_city").value,
     'country': document.getElementById("register_country").value,
     'email': document.getElementById("register_email").value,
-    'password': document.getElementById("register_password").value
+    'password': passwordHash.toString(CryptoJS.enc.Hex)
   } 
-
+  console.log(request)
   jQuery.ajax({
     type: "POST",
     url: "http://localhost:5000/api/register",
@@ -214,7 +217,7 @@ function sendRegisterRequest() {
 }
 
 function openRegister() {
-  $('#login_modal').modal('hide');
+  $('#login_modal').modal('hide'); 
   $('#register_modal').modal('show');
 }
 

@@ -245,7 +245,7 @@ class Login(Resource):
         print('Logged in')
         session.clear()
         session['user_id'] = default_user['id']
-        response = { 'status' : 'login success' }
+        response = { 'status' : 'success', 'id':  session['user_id']}
         return response, 200
 
       response = { 'status' : 'authentication failed' }
