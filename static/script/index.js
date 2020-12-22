@@ -174,11 +174,12 @@ function openProfile() {
  * Function to send login request
  */
 function sendLoginRequest() {
-
+  passwordHash = CryptoJS.SHA256(document.getElementById("login_password").value);
+  console.log(passwordHash.toString(CryptoJS.enc.Hex))
   var request = {
     'type': 'login',
     'username': document.getElementById("login_username").value,
-    'password': document.getElementById("login_password").value
+    'password': passwordHash.toString(CryptoJS.enc.Hex)
   } 
 
   jQuery.ajax({

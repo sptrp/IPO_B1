@@ -30,7 +30,8 @@ from json import dumps
 
 xml = os.path.join(sys.path[0], 'data/kurse.xml')  #Quelle: https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
 schema = os.path.join(sys.path[0], 'data/kurse.xsd')         #Damit es unter Linux, Windows und Mac laeuft
-request_schema = os.path.join(sys.path[0], 'data/request.xsd')  
+request_schema = os.path.join(sys.path[0], 'data/request.xsd')
+clientXml = os.path.join(sys.path[0], 'data/kunden.xsd')
 
 # server
 app = Flask(__name__)
@@ -121,34 +122,6 @@ def find_course(request):
   print(rows)
   return rows
 
-def find_client(request):
-  rows = []
-  tree = et.parse(xml)
-  root = tree.getroot()
-  path = helper.path_constructor_elem('id', request['id'])
-  
-  try:
-    # parse all (should be 1) found elements
-    for targ in root.xpath(path): # https://stackoverflow.com/questions/21746525/get-all-parents-of-xml-node-using-python
-      for dept in targ.xpath('ancestor-or-self::kunde'):
-        rows.append({ 
-                      'id':dept.find('id').text,
-                      'username':dept.find('username').text,
-                      'firstname':dept.find('vorname').text,
-                      'lastname': dept.find('nachname').text,
-                      'adress': {
-                        'street': dept.find('adresse/strasse').text,
-                        'zipcode': dept.find('adresse/plz').text,
-                        'city': dept.find('adresse/ort').text,
-                        'country': dept.find('adresse/land').text },
-                      'mail': dept.find('mail').text,
-                    })
-  except IOError:
-    print("I/O error")
-                                                                           
-  print(rows)
-  return rows
-
 def register(data):
 
     client_id = '%s' % os.getpid()
@@ -157,7 +130,6 @@ def register(data):
                             data['street'], data['postcode'], data['city'], 
                             data['country'], data['email'], data['password'])
     return {'status': 'success', 'id': client_id}
-
 
 model_all = api.model('Model', {
   'guid': fields.Integer,
