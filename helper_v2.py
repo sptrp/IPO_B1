@@ -1,3 +1,7 @@
+""" 
+B2 helper_v2.py
+Ivan Ponomarev, Stefan Holzbauer
+"""
 from configupdater import ConfigUpdater
 # for xml requests (Nikolai's advice)
 from lxml.builder import E
@@ -43,6 +47,7 @@ def add_kunde_to_course(guid, client_id):
   addbuchung.text = client_id
   tree.write(os.path.join(sys.path[0], 'data/kurse.xml'), encoding="utf-8", xml_declaration=True)
 
+# trim xml to following tags
 # 'Guid', 'Nummer', 'Name', 'Untertitel'
 def xml_trimmer(tree):
   filters = ['dvv_kategorie', 'minimale_teilnehmerzahl', 'maximale_teilnehmerzahl', 'anzahl_termine',
@@ -54,6 +59,7 @@ def xml_trimmer(tree):
 
   return tree
 
+# different trimming values
 # 'Name', 'Untertitel', 'beginn_datum', 'minimale_teilnehmerzahl', 'maximale_teilnehmerzahl'
 def xml_trimmer_mybooks(tree):
   filters = ['dvv_kategorie', 'anzahl_termine', 'ende_datum', 'zielgruppe', 'schlagwort', 'text', 
@@ -80,9 +86,11 @@ def path_constructor_divers(val):
 def path_constructor_onlyname(attribute, val):
   return "//veranstaltung/{}[contains(text(), '{}')]" .format(attribute, val)  
 
+# path for client id
 def path_constructor_parentnode(client_id):
   return "//kunde[id='{}']" .format(client_id)
 
+# path for client username
 def path_constructor_client_username(client_username):
   print("//kunde[username='{}']" .format(client_username))
   return "//kunde[username='{}']" .format(client_username)

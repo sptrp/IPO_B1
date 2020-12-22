@@ -1,25 +1,10 @@
-""" 
-B2 websocket server
-Ivan Ponomarev, Stefan Holzbauer
-"""
+#### only newly added lines:
 
-# TODO: 
-# pip install flask
-# pip install pandas
-# pip install flask_restx (for automatic documentation etc.)
-# pip install xmltodict
-# pip install lxml
-# pip install configupdater
-# pip install xmlschema
-# pip install requests
-
-# CHANGE TO B1: changed the used libraries
 from http.server import (HTTPServer, BaseHTTPRequestHandler)
 import functools
 from flask import (Flask, json, request, jsonify, Blueprint, render_template, session)
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_restx import (Api, Resource, fields)
-import pandas as pd  
 import lxml.etree as et
 import os
 import sys
@@ -29,14 +14,6 @@ import urllib.request
 import shutil
 from requests import get
 from json import dumps
-
-# CHANGE TO B1: Added Client XML path
-schema = os.path.join(sys.path[0], 'data/kurse.xsd')    
-ClientXml = os.path.join(sys.path[0], 'data/kunden.xml')
-ClientSchema = os.path.join(sys.path[0], 'data/kunden.xsd')
-request_schema = os.path.join(sys.path[0], 'data/request.xsd')  
-xml = os.path.join(sys.path[0], 'data/kurse.xml')
-url = 'https://vhsit.berlin.de/VHSKURSE/OpenData/Kurse.xml'
 
 # CHANGE TO B1: Added Flask
 # server
@@ -131,38 +108,6 @@ def find_client_data(request):
                                                                                                                                              
   return rows
 
-# CHANGE TO B1: XML and csv replaced with json
-# parse course and return json
-def find_all_courses():
-  tree = et.parse(xml)
-  root = tree.getroot()
-  rows = []
-  
-  try:
-    # parse elements and write to json
-    for dept in root:
-      keywords = ""
-      for kw in dept.findall('schlagwort'):
-          keywords = keywords + kw.text + " "
-
-      rows.append({ 'guid':dept.find('guid').text, 'number': dept.find('nummer').text, 
-                    'name': dept.find('name').text, 'subtitle': dept.find('untertitel').text,
-                    'category': dept.find('dvv_kategorie').text, 'min_members': dept.find('minimale_teilnehmerzahl').text,
-                    'max_members': dept.find('maximale_teilnehmerzahl').text, 'appointments': dept.find('anzahl_termine').text,
-                    'begin_date': dept.find('beginn_datum').text, 'end_date': dept.find('ende_datum').text,
-                    'target_audience': dept.find('zielgruppe').text, 'keywords': keywords,
-                    'location': { 'name': dept.find('veranstaltungsort/name').text, 'country': dept.find('veranstaltungsort/adresse/land').text, 
-                    'zipcode': dept.find('veranstaltungsort/adresse/plz').text, 'region': dept.find('veranstaltungsort/adresse/ort').text, 
-                    'street': dept.find('veranstaltungsort/adresse/strasse').text, 'barrier_free': dept.find('veranstaltungsort/barrierefrei').text },
-                    'price': { 'amount': dept.find('preis/betrag').text, 'discount_possible': dept.find('preis/rabatt_moeglich').text, 'price_reduced': dept.find('preis/zusatz').text },
-                    'web': { 'type': dept.find('webadresse/typ').text, 'name': 'webadresse/name', 'uri': dept.find('webadresse/uri').text }
-                    })
-
-  except IOError:
-    print("I/O error")
-  
-  return rows
-# CHANGE TO B1:
 # parse course and return json with concrete course
 def find_course(request):
   rows = []
@@ -213,9 +158,7 @@ def find_course(request):
     print("I/O error")
                                                                            
   return rows
-
-# CHANGE TO B1: everything below this line was newly added
-
+# CHANGE TO B1:
 # function to create a client
 def register(data):
 
