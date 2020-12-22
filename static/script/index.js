@@ -214,9 +214,7 @@ function sendLoggedInRequest() {
     dataType: "json",
     async: false,
     success: function(response) { 
-      console.log(response['status'] == 'logged in');
       response['status'] == 'logged in' ? loggedIn = true : loggedIn = false;
-      console.log(loggedIn);
      }
   });
 }
@@ -277,8 +275,16 @@ function sendRegisterRequest() {
     async: false,
     success: function(response) { 
       console.log(response)
-      $('#register_modal').modal('hide')
-     }
+     },
+     statusCode: {
+      201: function() {
+        $('#register_modal').modal('hide');
+        alert( "Erfolgreich registriert" );
+      },
+      500: function() {
+        alert( "Problem bei Registrierung" );
+      }
+    }
   });
 }
 
@@ -370,7 +376,6 @@ function checkForm() {
   var indexOfBlank = Array.prototype.findIndex.call(elements, function(element) {
       return element.tagName.toUpperCase() == 'INPUT' && element.value.length === 0 && (element.id == 'register_username' || element.id == 'register_password');
   });
-  console.log(indexOfBlank > -1) 
   document.getElementById("submit_register").disabled = indexOfBlank > -1;
 };
 

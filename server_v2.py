@@ -218,12 +218,14 @@ def find_course(request):
 
 # function to create a client
 def register(data):
-
+  try:
     client_id = '%s' % os.getpid()
     helper.create_kundenxml(client_id, data['username'], data['name'], data['surname'], 
                             data['street'], data['postcode'], data['city'], 
                             data['country'], data['email'], data['password'])
     return {'status': 'success', 'id': client_id}
+  except Exception:
+    return {'status': 'failed', 'id': 'null'}
 
 model_all = api.model('Model', {
   'guid': fields.String,
@@ -379,8 +381,11 @@ class Login(Resource):
 class Register(Resource):
   def post(self):
     data = request.get_json()
-    response = { 'status' : register(data) }
-    return response
+    response = register(data)
+    if response['status'] == 'success':
+      return response, 201
+
+    return response, 500
 
 # start page
 @app.route('/index')
